@@ -1,25 +1,96 @@
-# 🏢 Nilayam Heights HMS & 🎓 Yadav PG for Stay (Yadav.in)
+# Yadav Living
 
-[![PHP Version](https://img.shields.io/badge/PHP-8.4%2B-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net/)
+**Yadav Living** is the community living brand, with **Yadav Living PG** providing student accommodation. Residents, students, staff, and administrators use a consistent Yadav Living experience.
+
+> **Project type:** Freelance client project
+>
+> **Role:** Full-stack developer and platform architect
+
+[![PHP Version](https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net/)
+[![Python](https://img.shields.io/badge/Python-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 [![Three.js](https://img.shields.io/badge/Three.js-3D%20WebGL-black?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org/)
-[![Audit Status](https://img.shields.io/badge/Audit-20%2F20%20PASSED-success?style=for-the-badge&logo=checkmarx&logoColor=white)](scratch/test_all_features.php)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
 > **🙏 जय श्री कृष्णा &bull; सर्वे भवन्तु सुखिनः सर्वे सन्तु निरामयाः &bull; Jai Shree Krishna 🙏**  
 > *"Dedicated to harmonious, virtuous, and technologically advanced living under divine grace."*
 
+> **Team reminder:** You're writing this for your team, not just for yourself. Keep setup steps, security notes, and operational instructions accurate and usable by the next person.
+
+> **Deployment status (November 2026):** The Docker image builds locally, but the application has not been deployed or certified for production. A production database, persistent private KYC file storage, deployment secrets, and additional security validation are still required. Do not use real resident or student data until the production checklist below is complete.
+
 ---
 
 ## 📌 Executive Summary (For You & Your Team)
 
-**Nilayam Heights HMS & Yadav PG** is an enterprise-grade, dual-property residential management and student coliving suite built with modern **PHP 8.4**, **MySQL 8.0**, and **Three.js WebGL**.
+**Yadav Living** is a dual-property residential management and student accommodation application built with PHP, MySQL, Python/FastAPI, and Three.js WebGL. The Docker image currently uses PHP 8.2 with Apache; local development has also been checked with PHP 8.4.
 
 The platform seamlessly bridges two property models within a unified operational architecture:
 
-1. **🏢 Nilayam Heights Housing Society**: A premier residential community featuring automated maintenance billing, dynamic utility calculations, a real-time gate security visitor registry, resident KYC verification, 24/7 AI resident assistant, and an interactive 3D digital-twin campus visualizer.
-2. **🎓 Yadav PG for Stay (`Yadav.in`)**: A 4-floor student accommodation coliving facility featuring single, double, and triple sharing rooms, self-registration, 1-minute digital government KYC, student photo display, and a 1-click warden bed allocation desk.
+1. **🏢 Yadav Living Society**: A residential management portal with maintenance billing, a gate visitor registry, resident KYC workflows, a retrieval-grounded AI assistant, and an interactive 3D campus visualizer.
+2. **🎓 Yadav Living PG**: A student accommodation portal with registration, KYC workflows, configurable room and bed assignments, and a warden operations desk.
+
+### Property locations
+
+- **Yadav Living Society:** AS College Road, Satsang Nagar Near Atal Smriti Park Deoghar, Jharkhand 814112
+- **Yadav Living PG:** Hirna Near Tv relay Center Near AS College Road Dewan baba Deoghar, Jharkhand 814112
+
+The public property page and the Society and PG location views provide Google Maps search links for these addresses.
+
+## 🖼️ Application screenshots
+
+The following gallery shows the public property page and selected Society and PG portal screens.
+
+<table>
+  <tr>
+    <td align="center"><img src="images/homepage-properties.jpg" alt="Yadav Living public page showing the Society and PG cards and Jai Sri Krishna design" width="100%"></td>
+    <td align="center"><img src="images/society-maintenance.jpg" alt="Yadav Living maintenance and billing list view" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Public property page</strong><br>Society and PG information with the brand story.</td>
+    <td align="center"><strong>Maintenance and billing</strong><br>Society billing list view.</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="images/admin-login.jpg" alt="Yadav Living administrator portal sign-in screen with account and password fields redacted" width="100%"></td>
+    <td align="center"><img src="images/pg-registration.jpg" alt="Yadav Living PG student registration form" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Administrator portal</strong><br>Account identifier redacted in the published image.</td>
+    <td align="center"><strong>PG registration</strong><br>Student account registration experience.</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="images/pg-vacate-intimation.jpg" alt="Yadav Living PG vacate-intimation form with account label redacted" width="100%"></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>PG vacate intimation</strong><br>Student move-out notice form.</td>
+    <td></td>
+  </tr>
+</table>
+
+Screenshots are optimized copies of supplied captures. Screens that expose resident, student, or staff contact details, KYC documents, private profile information, or outdated property-location details are intentionally not published. The unrelated screenshot containing an API-key-like value is also excluded.
+
+## 🤖 Society & PG AI assistant
+
+The Society and PG portals share a Python/FastAPI assistant. It performs lightweight, IDF-weighted keyword retrieval over [`ai_service/knowledge.json`](ai_service/knowledge.json), sends only the current question and selected curated guide excerpts to a configured OpenAI-compatible chat-completions API, and returns source links with the answer. It does not connect to MySQL, retrieve KYC documents, read account balances, or retain conversation history.
+
+The PHP endpoint enforces the active property session and a CSRF token before calling the internal service with a shared bearer token. The service rejects common email, phone, government-ID, and payment-card patterns. This is a safeguard, not a guarantee that every sensitive value can be detected; do not enter personal or financial information. Questions and retrieved guide text are sent to the configured AI provider, so review that provider's privacy terms before enabling the feature with real users.
+
+The assistant will not make up fees, schedules, or contact details. If the curated guide does not cover a question, it directs the user to the property portal or administrator. Keep the guide factual and update it when portal workflows change.
+
+### Configure locally
+
+1. Copy `.env.example` to `.env` for Docker Compose and set unique database passwords.
+2. Generate a private service token with `openssl rand -hex 32`; put that same value in `AI_SERVICE_TOKEN`. Never commit the `.env` file.
+3. Set `OPENAI_API_KEY` to a key from your chosen OpenAI-compatible provider. `OPENAI_BASE_URL` and `OPENAI_MODEL` can be changed for a compatible provider/model.
+4. Run `docker compose up -d --build`. The Python service is internal to the Compose network and is not published as a host port. Use the Society or PG portal's AI Assistant link after signing in.
+
+For the standalone PHP development-server setup, set `AI_SERVICE_URL=http://127.0.0.1:8000` and the same `AI_SERVICE_TOKEN` in `.env.local`, install `ai_service/requirements.txt` in a Python virtual environment, then run `.venv/bin/uvicorn --env-file .env.local --app-dir ai_service main:app --host 127.0.0.1 --port 8000` in a separate terminal. Keep the token and provider key in the ignored environment file, not in source or shell history.
+
+The AI service health endpoint is deliberately not exposed on the host. Check it from the service container with `docker compose exec ai python -c "import urllib.request; print(urllib.request.urlopen('http://127.0.0.1:8000/healthz').read().decode())"`. A missing model key or unavailable provider is shown as an explicit assistant error rather than a fabricated answer.
+
+Run the AI service's focused checks after installing its requirements: `python3 -m venv .venv && .venv/bin/pip install -r ai_service/requirements.txt && .venv/bin/python -m unittest discover -s ai_service -p 'test_*.py'`. The retrieval evaluation cases cover Society/PG addresses and common KYC, billing, complaint, notice, and move-out workflows.
 
 ---
 
@@ -41,7 +112,8 @@ Society-Management-System/
 ├── HMS-2/
 │   ├── Includes/                     # System-wide core libraries & security middleware
 │   │   ├── config.php                # Environment-aware database connection (MySQLi & PDO)
-│   │   └── session.php               # Hardened RBAC authentication & BCrypt password engine
+│   │   ├── session.php               # Hardened RBAC authentication & BCrypt password engine
+│   │   └── ai_chat.php               # Authenticated PHP-to-AI service proxy
 │   │
 │   ├── admin/                        # 🏢 Housing Society Administrator Portal
 │   │   ├── Dashboard/admin.php       # Society KPI metrics, 3D campus & quick-action sidebar
@@ -52,7 +124,7 @@ Society-Management-System/
 │   │   ├── Members/                  # Resident member directory & facility staff roster
 │   │   ├── Home_Services/            # Society handyman & electrician service directory
 │   │   ├── Event_calender/           # Community calendar & festival scheduler
-│   │   └── Chat/ai_assistant.php     # 24/7 Society AI Assistant interface
+│   │   └── Chat/ai_assistant.php     # Legacy URL redirect to the shared assistant
 │   │
 │   ├── members/                      # 🏠 Housing Society Resident Portal
 │   │   ├── Dashboard/member.php      # Resident self-service hub, noticeboard & ledger
@@ -62,7 +134,7 @@ Society-Management-System/
 │   ├── staff/                        # 🛡️ Gate Security Guard Portal
 │   │   └── Dashboard/staff.php       # Live visitor check-in, contractor registry & logs
 │   │
-│   ├── pg/                           # 🎓 Yadav PG for Stay Coliving Module (Yadav.in)
+│   ├── pg/                           # 🎓 Yadav Living PG coliving module
 │   │   ├── login.php                 # Dedicated PG student & warden sign-in portal
 │   │   ├── register.php              # Streamlined student sign-up (instant redirect to KYC)
 │   │   ├── student/                  # Student Self-Service Suite
@@ -89,6 +161,7 @@ Society-Management-System/
 │   │   └── sri_krishna_modern.jpg    # 🌟 High-Definition Modern Sri Krishna Divine Artwork
 │   │
 │   ├── js/
+│   │   ├── community-assistant.js    # Society/PG assistant chat client
 │   │   ├── 3d_campus_hero.js         # Three.js r128 3D Digital Twin with orbit controls
 │   │   ├── ambient_space.js          # Throttled 30 FPS starfield & particle background
 │   │   └── vendor/three.min.js       # Localized standalone Three.js engine
@@ -100,10 +173,13 @@ Society-Management-System/
 │   ├── admin_login.php               # 🌟 Dedicated Central Administrator Portal (SSO)
 │   ├── login.php                     # Multi-role Society & Staff authentication
 │   ├── register.php                  # Resident sign-up with instant redirect to KYC
+│   ├── assistant.php                 # Shared, session-authorized Society/PG assistant page
 │   └── hms.sql                       # Complete relational database dump
 │
-├── Dockerfile                        # Multi-stage production container configuration
-├── docker-compose.yml                # Microservices orchestration (PHP 8.2 + MySQL 8.0)
+├── Dockerfile                        # Apache/PHP container image
+├── ai_service/                       # FastAPI assistant with curated retrieval and provider integration
+├── docker-compose.yml                # Local Docker Compose setup (PHP 8.2 + MySQL 8.0)
+├── images/                           # Privacy-reviewed README screenshot gallery
 ├── .env.example                      # Environment variables template
 ├── .gitignore                        # Git exclusion rules
 └── .dockerignore                     # Docker build context optimizations
@@ -115,10 +191,10 @@ Society-Management-System/
 
 ### 1. 🛡️ Dedicated Central Administrator Portal (`admin_login.php`)
 - **Standalone Security Endpoint**: Separate from standard member/student logins. Accessible via top navbar (`Admin Portal`) and direct links from all login pages.
-- **Single Sign-On (SSO)**: One login grants simultaneous administrator privileges across both Society Admin and Yadav PG Warden.
+- **Single Sign-On (SSO)**: One login grants simultaneous administrator privileges across Yadav Living and Yadav Living PG.
 - **Dynamic Portal Routing**: Allows the administrator to launch directly into:
   - *Society Dashboard*
-  - *Yadav PG Warden*
+  - *Yadav Living PG Warden*
   - *PG Students & KYC Registry*
   - *Society Resident KYC Review*
 
@@ -150,21 +226,23 @@ Society-Management-System/
 ### 5. 🌐 Modern 3D WebGL Campus Digital Twin
 - **Three.js r128**: Interactive 3D digital-twin stage with drag-to-orbit controls.
 - **Lighting Presets**: 1-click toggles between **Cyber Neon**, **Daylight**, and **Sunset**.
-- **Camera Presets**: Instant focus jumps to **Nilayam Towers**, **Yadav PG Block**, or **Security Gate**.
+- **Camera Presets**: Instant focus jumps to **Yadav Living residences**, **Yadav Living PG**, or **Security Gate**.
 - **Performance Capping**: Throttled to 30 FPS and automatically paused via `IntersectionObserver` when scrolled off-screen to preserve battery and GPU resources.
 
 ---
 
-## 🔐 Enterprise Security Architecture (OWASP Hardened)
+## 🔐 Security and privacy
 
 | Security Domain | Implementation Details |
 | :--- | :--- |
-| **SQL Injection (SQLi)** | **Zero raw SQL concatenation**. 100% converted to parameterized prepared statements (`mysqli_prepare()`, `mysqli_stmt_bind_param()`, `mysqli_stmt_execute()`). |
-| **Password Storage** | **BCrypt hashing** (`PASSWORD_DEFAULT` with cost 12). Legacy plain-text passwords automatically upgrade to BCrypt upon first successful authentication. |
-| **Cross-Site Scripting (XSS)** | All dynamic database outputs passed through `htmlspecialchars(..., ENT_QUOTES, 'UTF-8')`. |
-| **Session Security** | `session.cookie_httponly = 1`, `session.cookie_samesite = 'Lax'`, and automatic `session_regenerate_id(true)` upon privilege escalation. |
-| **Execution After Redirect (EAR)** | All authorization gates strictly terminate execution with `exit;` immediately following redirect headers. |
-| **Role-Based Access Control** | Rigid segregation between `admin`, `member`, `staff`, and PG `student` roles. |
+| **Authentication** | Passwords use PHP's `password_hash()` / `password_verify()` APIs. Legacy plaintext credentials are upgraded on successful authentication; reset demo credentials before sharing or deployment. |
+| **Resident privacy** | Society residents can access their own account and KYC, not the resident directory. PG students are scoped to their own profile and records. |
+| **Administrator access** | Society and PG management pages require their respective authenticated administrator/warden role. Role checks run on the server, not only in the UI. |
+| **KYC documents** | Private document downloads are authorized against the signed-in resident's records or the appropriate administrator session. Keep uploaded documents outside public web directories. |
+| **Database access** | Authentication and sensitive record ownership checks use prepared statements. Legacy modules have not had a complete SQL-injection audit. |
+| **Session handling** | Session cookies are HTTP-only and cookie-only; the session ID is regenerated after authentication. The application does not currently set the cookie `Secure` flag, so production HTTPS session-cookie handling must be implemented and verified before launch. |
+
+This freelance client project is currently suitable for development and staging, but it is not certified for production use with real resident or student data. Role and data-ownership checks exist, but they do not replace a full security review. Before production use, complete CSRF protection, upload size and content validation, rate limiting, secure production session-cookie configuration, backup/restore drills, and a full security review.
 
 ---
 
@@ -173,7 +251,7 @@ Society-Management-System/
 ### Option A: 💻 Standalone Local Server (Mac / Linux / Windows)
 
 #### 1. Prerequisites
-- **PHP 8.0+** with `mysqli`, `pdo_mysql`, and `gd` enabled (`php -v`)
+- **PHP 8.2+** with `mysqli`, `pdo_mysql`, and `gd` enabled (`php -v`)
 - **MySQL 8.0+** running on `localhost:3306`
 
 #### 2. Configure Environment Credentials (.env.local)
@@ -189,7 +267,7 @@ cp .env.example .env.local
 # DB_PASS=your_password_here
 ```
 > [!NOTE]
-> `.env.local` is strictly ignored by Git. Your passwords and credentials will never be exposed or pushed to GitHub.
+> `.env.local` is ignored by the repository's Git rules. Verify with `git check-ignore .env.local` before working with credentials, and never rely on ignore rules as a substitute for checking staged files.
 
 #### 3. Import Database
 ```bash
@@ -209,63 +287,57 @@ Navigate to:
 
 ### Option B: 🐳 Local Docker Container Deployment
 
+Create a private `.env` file from `.env.example` and set strong, unique values for `DB_PASS` and `DB_ROOT_PASSWORD`. Compose requires both values and will stop with an error if either is unset. Do not commit `.env`.
+
 ```bash
 docker compose up -d --build
 ```
 
+The Compose database imports `HMS-2/hms.sql` on its first initialization. SQL files are excluded from the Docker build context, but the Compose database mounts this local file directly, so verify it exists before starting the stack. The dump contains synthetic demo records and credentials and is for local development only; never replace it with a real database export or expose its demo accounts. Compose volumes persist the local database and uploads; `docker compose down -v` deletes those volumes and their data.
+
+The assistant also requires a private `AI_SERVICE_TOKEN` and an `OPENAI_API_KEY`; configure them as described in [Society & PG AI assistant](#-society--pg-ai-assistant) before using its chat function.
+
 Access containerized endpoints:
 - 🌐 **Landing Page**: [http://localhost:8080/home/home.php](http://localhost:8080/home/home.php)
 - 🛡️ **Central Admin Portal**: [http://localhost:8080/admin_login.php](http://localhost:8080/admin_login.php)
-- 🎓 **Yadav PG Portal**: [http://localhost:8080/pg/login.php](http://localhost:8080/pg/login.php)
+- 🎓 **Yadav Living PG Portal**: [http://localhost:8080/pg/login.php](http://localhost:8080/pg/login.php)
 
 ---
 
-### Option C: ☁️ 100% Free Cloud Deployment on Render (Zero Cost, No Credit Card)
+### Option C: ☁️ Cloud deployment preparation (Render example)
 
-You can host this entire platform in the cloud completely free of cost using **Render's Free Web Service Tier** combined with a **Free Cloud MySQL Database** (such as Aiven or TiDB Cloud):
+[`render.yaml`](render.yaml) is a deployment blueprint, not evidence that the application is deployed or ready for real resident data. It configures a Render Starter web service and a 1 GB persistent disk for private KYC uploads, and expects an externally managed MySQL-compatible database. Cloud provider plans, pricing, availability, and database compatibility can change; confirm them directly with the provider before choosing a service.
 
-#### 1. Create a 100% Free MySQL Database (No Credit Card)
-1. Sign up for free at **[Aiven.io](https://aiven.io)** (or **[TiDB Cloud](https://tidbcloud.com)**).
-2. Create a free MySQL database instance (Free Tier — 100% free forever, no payment details required).
-3. Copy your database credentials:
-   - `DB_HOST` (e.g. `mysql-xyz.aivencloud.com`)
-   - `DB_PORT` (e.g. `12345`)
-   - `DB_NAME` (e.g. `defaultdb` or `hms`)
-   - `DB_USER` (e.g. `avnadmin` or `root`)
-   - `DB_PASS` (your database password)
-4. Open the SQL console or connect via MySQL CLI and import [`HMS-2/hms.sql`](HMS-2/hms.sql) into your database.
+Before creating a staging service:
 
-#### 2. Deploy Web Service on Render (Free Tier)
-1. Log into **[render.com](https://render.com)** using your GitHub account (`Yuvionix`).
-2. Click **New +** → **Web Service**.
-3. Select your repository: **`Yuvionix/Nilayam-Heights-HMS`**.
-4. Configure the settings:
-   - **Name**: `nilayam-heights-hms`
-   - **Language / Runtime**: `Docker` *(Render detects `Dockerfile` automatically)*
-   - **Instance Type / Plan**: Select **`Free`** ($0 / month)
-5. Under **Environment Variables**, add your cloud database credentials:
-   - `DB_HOST` = `<your cloud host>`
-   - `DB_PORT` = `<your cloud port>`
-   - `DB_NAME` = `<your cloud db name>`
-   - `DB_USER` = `<your cloud db user>`
-   - `DB_PASS` = `<your cloud db pass>`
-   - `APP_ENV` = `production`
-6. Click **Create Web Service**.
-7. Render will build the Docker container using dynamic port binding and issue your live HTTPS URL (e.g. `https://nilayam-heights-hms.onrender.com`)!
+1. **Connect a Git repository.** This workspace currently has no Git metadata, so it cannot be pushed or connected to a deployment provider until the project is placed in the intended repository. Confirm `.gitignore` and `.dockerignore` exclude credentials, private uploads, and backups.
+2. **Provision the database yourself.** Create a managed database with network access restricted to the application where supported. Add `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASS` as protected service environment variables. Do not use a developer database or reuse a local password.
+3. **Prepare the schema deliberately.** The bundled [`HMS-2/hms.sql`](HMS-2/hms.sql) dump contains synthetic demo records and credentials; do not import the full dump into a public service. For a clean deployment database, import the dump into an isolated local MySQL database, export only the table definitions, and import that schema-only file into the managed database:
+   ```bash
+   mysqldump --no-data --skip-comments hms > schema-only.sql
+   mysql --host="<DB_HOST>" --port="<DB_PORT>" --user="<DB_USER>" --password "<DB_NAME>" < schema-only.sql
+   ```
+   The password prompt avoids placing the database password in shell history. Keep `schema-only.sql` private, verify it contains no `INSERT` statements, and apply any required migrations to existing databases only after reviewing their current schema. Production connections use TLS with the system CA bundle; set `DB_SSL_CA` to a readable CA certificate file path if your database provider requires a provider-specific certificate. Never import real resident data into a public demo environment.
+4. **Configure private, persistent uploads.** The Render blueprint mounts persistent storage at `/var/lib/nilayam-hms/uploads`; the container entrypoint sets the directory ownership for PHP. Keep KYC documents outside the public web root and configure appropriate backups. Confirm that the selected hosting plan and disk are provisioned before accepting uploads.
+5. **Configure HTTPS and sessions.** Set `APP_ENV=production` and `APP_DEBUG=false`, set `APP_URL` to the canonical HTTPS origin, and verify secure session cookies and proxy HTTPS behavior before enabling sign-in. Production mode enables the session cookie `Secure` flag, so production sign-in requires HTTPS.
+6. **Configure the AI service separately.** The blueprint provisions a separate Python AI web service. Set `OPENAI_API_KEY` and a strong `AI_SERVICE_TOKEN` on it. Set the same token on the PHP web service and set `AI_SERVICE_URL` to the AI service's HTTPS base URL. The free AI service may sleep when idle; verify provider configuration, authentication, and response behavior in staging.
+7. **Deploy to staging first.** Review build and application logs; test registration, login, role boundaries, billing, KYC submission, authorized document retrieval, assistant access for each property, and persistence after a service restart. Confirm backups can be restored.
+8. **Approve production use only after the security checklist below is complete.** The current repository has no production-readiness certification. A successful Docker build or health check does not establish that the application is safe for real personal information.
+
+The public sitemap is available at `/sitemap.php`; authenticated portal routes should remain excluded from indexing.
 
 ---
 
-## 🔑 Default Credentials & Access Matrix
+## 🔑 Portal Access
 
-| Role | Username / Email | Password | Access Endpoint |
-| :--- | :--- | :--- | :--- |
-| **Central Administrator (SSO)** | `Yuvraj` | `password` | [`admin_login.php`](http://127.0.0.1:8000/admin_login.php) |
-| **Society Admin** | `Yuvraj` *(or `yuvrajyadav734@gmail.com`)* | `password` | [`admin/Dashboard/admin.php`](http://127.0.0.1:8000/admin/Dashboard/admin.php) |
-| **Society Resident Member** | `yuvrajyadav734@gmail.com` | `password` | [`members/Dashboard/member.php`](http://127.0.0.1:8000/members/Dashboard/member.php) |
-| **Gate Security Guard** | `ramesh_guard` *(or `deepak.facility@gmail.com`)* | `password` | [`staff/Dashboard/staff.php`](http://127.0.0.1:8000/staff/Dashboard/staff.php) |
-| **PG Student Resident** | `yuvraj` *(or `yuvrajyadav734@gmail.com`)* | `password` | [`pg/student/profile.php`](http://127.0.0.1:8000/pg/login.php) |
-| **PG Warden / Tech Admin** | `Yuvraj` | `password` | [`pg/admin/dashboard.php`](http://127.0.0.1:8000/pg/login.php) |
-| **Property Owners** | `Binod Yadav & Sumit Yadav` | In-Person | Direct stay agreements, pricing & room visits |
+| Role | Access Endpoint | Permissions |
+| :--- | :--- | :--- |
+| **Society Administrator** | `admin_login.php` | Society resident management, KYC review, billing and operations |
+| **Society Resident** | `login.php` | Own account, KYC, bills and resident services; no access to other residents' private records |
+| **PG Warden** | `pg/login.php` or `admin_login.php` | PG student management, room allocation and KYC review |
+| **PG Student** | `pg/login.php` | Own profile, KYC, payment history, complaints and vacate requests |
+
+Bundled SQL fixtures are intended for local development and contain synthetic demo records/accounts. Never expose demo accounts on a public deployment. Never commit production credentials, real resident data, or uploaded documents.
 
 ---
 
@@ -280,7 +352,7 @@ You can host this entire platform in the cloud completely free of cost using **R
 | `bill` | Utility & maintenance invoices | Scoped to `member.id` |
 | `announcement` | Society broadcast notices | Posted by `admin` |
 | `registry` | Live gate security entries | Logged by `staff` |
-| `pg_rooms` | Hostel rooms across Floors 1–4 | Single, Double, Triple sharing types |
+| `pg_rooms` | Warden-managed PG room inventory | Single, Double, Triple sharing types |
 | `pg_beds` | Individual beds inside PG rooms | Joined with `pg_students.bed_id` |
 | `pg_students` | Active & vacating student residents | References `pg_rooms` and `pg_beds` |
 | `pg_kyc` | Government ID & Guardian records | One-to-one with `pg_students.id` |
@@ -299,10 +371,10 @@ flowchart TD
     
     Portals -->|Dedicated Admin SSO| AdminPortal[🛡️ Central Admin Portal admin_login.php]
     Portals -->|Society Community| SocietyLogin[🏢 Society Portal login.php]
-    Portals -->|Student Accommodation| PGLogin[🎓 Yadav PG Portal pg/login.php]
+    Portals -->|Student Accommodation| PGLogin[🎓 Yadav Living PG Portal pg/login.php]
     
     AdminPortal --> SocietyAdmin[🏢 Society Admin Dashboard]
-    AdminPortal --> PGWarden[🎓 Yadav PG Warden Dashboard]
+    AdminPortal --> PGWarden[🎓 Yadav Living PG Warden Dashboard]
     AdminPortal --> CrossKYC[🪪 PG Student & Resident KYC Desks]
     
     SocietyLogin -->|Apartment Resident| MemberDash[🏠 Resident Dashboard & Bills]
@@ -310,13 +382,13 @@ flowchart TD
     
     PGLogin -->|Active Student| StudentProfile[🎓 Student Profile & Payments]
     
-    subgraph HousingSociety [Nilayam Heights Housing Society]
+    subgraph HousingSociety [Yadav Living Community]
         SocietyAdmin
         MemberDash
         StaffDash
     end
     
-    subgraph ColivingHostel [Yadav PG for Stay - Yadav.in]
+    subgraph ColivingHostel [Yadav Living PG - Yadav.in]
         PGWarden
         StudentProfile
     end
@@ -354,19 +426,19 @@ sequenceDiagram
 
 ## 🛠️ Developer Runbook & Operations Guide
 
-### A. How to Run the 20-Point Automated Verification Suite
-Whenever code changes or database migrations are made, execute the audit test suite:
+### A. Current Verification
+No project-owned automated test suite is currently committed. Run PHP syntax checks after changes:
 ```bash
-php scratch/test_all_features.php
+find HMS-2 -type f -name '*.php' -not -path '*/vendor/*' -print0 | xargs -0 -n1 php -l
 ```
-*Expected Output: `20 PASSED, 0 FAILED` covering MySQL connection, RBAC accounts, KYC schemas, rebranding purity, and visual assets.*
+
+Also manually verify that a Society resident cannot open Society administrator pages or another resident's records, and that a PG student cannot open the Warden Desk or another student's records. Test KYC document links using two separate resident accounts.
 
 ### B. How to Allocate a Bed to a Student
-1. Log in to the Admin Portal at `http://127.0.0.1:8000/admin_login.php` (User: `Yuvraj` / Pass: `password`).
-2. Navigate to **PG Students & KYC** ([`admin/pg_students.php`](http://127.0.0.1:8000/admin/pg_students.php)).
-3. Locate the student showing `Pending Allocation`.
-4. Choose an available bed from the inline dropdown (e.g., `R-102 (Bed B)`) and click **Assign**.
-5. The room and bed occupancy matrices update atomically across the database.
+1. Sign in through the PG Warden Desk at `pg/login.php` with an administrator account.
+2. Open **Student Residents** in the PG administrator navigation.
+3. Enter the resident's room, bed label, floor and occupancy details.
+4. Save the assignment; the system validates the resident and bed availability before committing.
 
 ### C. How to Review & Verify Resident KYC
 1. In Society Admin, click **Resident KYC** ([`admin/society_kyc.php`](http://127.0.0.1:8000/admin/society_kyc.php)).
@@ -375,44 +447,16 @@ php scratch/test_all_features.php
 
 ### D. How to Export a Clean Database Backup
 ```bash
-mysqldump -u root --add-drop-table hms > "HMS-2/hms.sql"
-cp "HMS-2/hms.sql" "hms.sql"
+mkdir -p private_backups
+mysqldump -u root --add-drop-table hms > "private_backups/hms-$(date +%F).sql"
 ```
+Database backups contain resident information. Keep them private and never commit them.
 
 ---
 
-## 🧪 System & Security Audit Results
+## 🧪 Verification status
 
-Our automated audit test suite validates every module across the database and codebase:
-
-```text
-=========================================================
-🔍 FULL-STACK SYSTEM & FUNCTIONALITY AUDIT RESULTS
-=========================================================
-✅ [PASS] Database Connection (MySQLi)           ── Connected to database 'hms'
-✅ [PASS] Society Admin Account (Yuvraj)          ── Verified admin user
-✅ [PASS] Society Resident Member Account         ── Verified resident session
-✅ [PASS] Security Guard Staff Account            ── Ramesh Kumar active
-✅ [PASS] Society Billing & Invoicing Engine      ── 11 invoices, ₹35,500 total
-✅ [PASS] Security Gate Visitor Registry          ── 5 gate entries logged
-✅ [PASS] Community Announcements Engine          ── 4 active broadcasts
-✅ [PASS] Yadav PG Rooms Matrix                   ── 8 rooms across 4 floors
-✅ [PASS] Yadav PG Bed Capacity Tracking          ── 16 Beds (4 occupied, 12 vacant)
-✅ [PASS] PG Student Resident Record              ── Yuvraj Yadav in R-406
-✅ [PASS] Student KYC & Guardian Documentation    ── Father: Binod Prasad Yadav (Verified)
-✅ [PASS] PG Maintenance Complaints Engine        ── Ticketing operational
-✅ [PASS] 30-Day Digital Vacate Intimation Engine ── Settlement workflow active
-✅ [PASS] PG Digital Receipts Ledger              ── 3 student receipts logged
-✅ [PASS] Complete Brand Rebranding Audit         ── 0 legacy 'Kio' remnants
-✅ [PASS] Domain Rebranding Audit                 ── 0 legacy 'prazo' remnants
-✅ [PASS] Society Resident KYC System             ── society_kyc active & verified
-✅ [PASS] Creator Identity Audit                  ── Sumit Yadav active, 0 Shyam
-✅ [PASS] Dedicated Administrator Portal (SSO)    ── admin_login.php active
-✅ [PASS] Modern Sri Krishna Visual Asset         ── 851 KB HD artwork active
-=========================================================
-📊 AUDIT TOTAL: 20 PASSED, 0 FAILED (100% HEALTHY)
-=========================================================
-```
+The Docker Compose application and database have been started locally; the schema imported successfully, public/login routes returned HTTP 200, direct SQL-file access returned HTTP 403, and dynamic container port binding returned HTTP 200. PHP syntax checks passed for the application. These deployment smoke checks do not test every workflow and are not a security audit. No production deployment has been verified. SQL fixtures are intended for local development; use schema-only SQL without demo accounts for a public deployment.
 
 ---
 
@@ -422,12 +466,12 @@ When contributing to this repository, please uphold these engineering standards:
 1. **Security First**: Always use `mysqli_prepare()` with strict type-binding. Never interpolate variables directly into SQL queries.
 2. **Output Hygiene**: Always escape dynamic user data with `htmlspecialchars(..., ENT_QUOTES, 'UTF-8')`.
 3. **Session Integrity**: Guard every authenticated endpoint using `require_role()` or `require_pg_role()`.
-4. **Preserve Cultural & Brand Identity**: Yadav PG operates under the brand **Yadav.in** & **Yadav PG for Stay**, honoring the sacred slogan **"जय श्री कृष्णा (Jai Shree Krishna)"**.
+4. **Preserve Cultural & Brand Identity**: Yadav Living PG operates under the brand **Yadav.in**, honoring the sacred slogan **"जय श्री कृष्णा (Jai Shree Krishna)"**.
 5. **Clear Commit Messages**: Follow Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `security:`).
 
 ---
 
-## 👤 Author & Platform Architect
+## 👤 Freelance Developer & Platform Architect
 
 - **Lead Full-Stack Developer & Platform Architect**: **Yuvraj**
 - **Email**: [yuvrajyadav734@gmail.com](mailto:yuvrajyadav734@gmail.com)
