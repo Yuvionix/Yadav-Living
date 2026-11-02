@@ -3,15 +3,15 @@
 > *"Reminder: You're writing this for your team, not just for yourself."*  
 > — Clean code, explicit architecture, robust security, and comprehensive documentation make software maintainable for everyone.
 
-Welcome to the engineering team of **Nilayam Heights Society Management System & Yadav PG for Stay**! This handbook sets forth the architectural conventions, coding rules, security mandates, and daily runbooks for any developer working on this codebase.
+Welcome to the engineering team behind **Yadav Living** and **Yadav Living PG**! This handbook sets forth the architectural conventions, coding rules, security mandates, and daily runbooks for any developer working on this codebase.
 
 ---
 
 ## 🏛️ 1. Project Philosophy & Architecture
 
 Our software operates a **dual-property operational model**:
-1. **Nilayam Heights Society**: Apartment gated community operations (maintenance billing, security gate visitor registry, resident KYC, AI resident assistant).
-2. **Yadav PG for Stay (`Yadav.in`)**: Student coliving accommodation (Floors 1–4, bed allocation, student KYC, vacate intimations, maintenance ticketing).
+1. **Yadav Living**: Residential community operations (maintenance billing, security gate visitor registry, resident KYC, AI resident assistant).
+2. **Yadav Living PG (`Yadav.in`)**: Student coliving accommodation (Floors 1–4, bed allocation, student KYC, vacate intimations, maintenance ticketing).
 
 ### Core Stakeholders
 - **Property Owners**: **Binod Yadav & Sumit Yadav** (Property ownership, in-person room visits, custom stay terms & fee agreements).
@@ -31,8 +31,8 @@ Our software operates a **dual-property operational model**:
 ### Local Development Steps
 ```bash
 # 1. Clone repository
-git clone https://github.com/Yuvionix/Nilayam-Heights-HMS.git
-cd Nilayam-Heights-HMS
+git clone <repository-url> yadav-living
+cd yadav-living
 
 # 2. Configure private local environment (strictly git-ignored)
 cp .env.example .env.local
@@ -123,7 +123,7 @@ Never hardcode passwords or sensitive credentials in PHP files. Always load envi
 ```sql
 -- 1. Insert Room (e.g. Room 408, 4th floor, Double sharing)
 INSERT INTO pg_rooms (room_number, floor, occupancy_type, total_beds, occupied_beds, status) 
-VALUES ('R-408', 'Four Floor [Yadav PG for Stay]', 'double', 2, 0, 'available');
+VALUES ('R-408', 'Four Floor [Yadav Living PG]', 'double', 2, 0, 'available');
 
 -- 2. Insert Beds for this room
 SET @room_id = LAST_INSERT_ID();
@@ -154,4 +154,4 @@ INSERT INTO pg_beds (room_id, bed_label, is_occupied) VALUES (@room_id, 'Bed B',
   php scratch/test_all_features.php
   ```
 
-Thank you for building clean, secure, and team-friendly software for **Nilayam Heights & Yadav PG**!
+Thank you for building clean, secure, and team-friendly software for **Yadav Living & Yadav Living PG**!

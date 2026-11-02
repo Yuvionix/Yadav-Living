@@ -10,7 +10,7 @@
     <title>Home Services Directory | Resident Portal</title>
     <link rel="stylesheet" href="home_ser.css">
     <link rel="stylesheet" href="../../css/master_theme.css">
-    <link rel="shortcut icon" href="Logo3.jpg">
+    <link rel="shortcut icon" href="../../home/logo.svg">
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -118,7 +118,7 @@
 <body>
     <div class="sidebar">
         <div class="logo-details">
-            <i><img src="logo.svg" alt="logo" width="46" height="46"></i>
+            <i><img src="../../home/logo.svg" alt="logo" width="46" height="46"></i>
             <span class="logo_name">HMS</span>
         </div>
         <ul class="nav-links">
@@ -150,12 +150,6 @@
                 <a href="../Neighbourhood/member_neigh.php">
                     <i class='bx bx-map'></i>
                     <span class="links_name">Neighbourhood</span>
-                </a>
-            </li>
-            <li>
-                <a href="../Members/index.php">
-                    <i class='bx bx-list-ul'></i>
-                    <span class="links_name">Members</span>
                 </a>
             </li>
             <li>
@@ -204,7 +198,7 @@
         <div class="home-content" style="padding: 92px 28px 28px 28px;">
             <div style="margin-bottom: 24px;">
                 <h2 style="font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">Society Verified Staff & Essential Services</h2>
-                <p style="font-size: 14px; color: #64748b; margin: 0;">Authorized gatekeepers, electricians, plumbers, housekeepers, and packers serving Nilayam Heights, Satsang Nagar, Deoghar</p>
+                <p style="font-size: 14px; color: #64748b; margin: 0;">Authorized gatekeepers, electricians, plumbers, housekeepers, and packers serving Yadav Living, Satsang Nagar, Deoghar</p>
             </div>
 
             <!-- Category 1: Security -->
@@ -348,7 +342,7 @@
                             <div class="provider-avatar av-mover"><i class='bx bx-box'></i></div>
                             <div>
                                 <div class="provider-name">Deoghar Express Cargo</div>
-                                <div class="provider-role">Hirna Road Branch, Satsang Nagar</div>
+                                <div class="provider-role">Deoghar service provider</div>
                             </div>
                         </div>
                         <div class="rating-stars">

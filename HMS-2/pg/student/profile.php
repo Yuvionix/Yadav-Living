@@ -34,15 +34,15 @@ $kyc_done = $chk_kyc && !empty($chk_kyc['father_name']);
                 <?php 
                     $photo_url = "";
                     if (!empty($current_student['photo'])) {
-                        if (file_exists(__DIR__ . "/../uploads/" . $current_student['photo'])) {
-                            $photo_url = "../uploads/" . htmlspecialchars($current_student['photo']);
+                        if (hms_kyc_file_path('pg', $current_student['photo']) !== false) {
+                            $photo_url = hms_kyc_download_url('pg', $current_student['photo']);
                         } elseif (file_exists(__DIR__ . "/../assets/" . $current_student['photo'])) {
                             $photo_url = "../assets/" . htmlspecialchars($current_student['photo']);
                         }
                     }
                 ?>
                 <?php if (!empty($photo_url)): ?>
-                    <img src="<?php echo $photo_url; ?>" alt="Student Photo" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="<?php echo htmlspecialchars($photo_url, ENT_QUOTES, 'UTF-8'); ?>" alt="Student Photo" style="width: 100%; height: 100%; object-fit: cover;">
                 <?php else: ?>
                     <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 64px; font-weight: 700;">
                         <?php echo strtoupper(substr($current_student['name'] ?? 'Y', 0, 1)); ?>
@@ -113,7 +113,7 @@ $kyc_done = $chk_kyc && !empty($chk_kyc['father_name']);
                     <tr style="border-bottom: 1px solid #f1f5f9;">
                         <td style="padding: 12px 0; font-size: 13px; color: #0099e5; font-weight: 500;">Location</td>
                         <td style="padding: 12px 0; font-size: 14px; color: #1e293b;">
-                            <?php echo htmlspecialchars($current_student['location'] ?? 'Hirna Near Tv relay Centre B. Deoghar Jharkhand 814112'); ?>
+                            <?php echo htmlspecialchars($current_student['location'] ?? 'Not provided'); ?>
                         </td>
                     </tr>
                     <tr style="border-bottom: 1px solid #f1f5f9;">

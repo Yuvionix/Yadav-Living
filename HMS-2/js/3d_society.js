@@ -1,6 +1,6 @@
 /**
  * High-Performance 3D Society Architecture Model
- * Built with Three.js for Nilayam Heights HMS - Engineered by Yuvraj
+ * Built with Three.js for Yadav Living - Engineered by Yuvraj
  * Optimized for 60+ FPS, minimal CPU/GPU usage, and maximum Lighthouse score.
  */
 
@@ -98,7 +98,7 @@
       return mesh;
     }
 
-    // Nilayam Heights Complex Towers
+    // Yadav Living Society towers
     createBuilding(-4, -2, 5, 12, 5, buildingMaterial);
     createBuilding(-4, -2, 3, 2, 3, cyanMaterial); // Solar Rooftop
 

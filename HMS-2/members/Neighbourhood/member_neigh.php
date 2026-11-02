@@ -1,6 +1,7 @@
 <?php 
   require_once("../../Includes/config.php"); 
   require_once("../../Includes/session.php"); 
+  require_once("../../Includes/property_locations.php");
   require_role(array('member', 'admin'), '../../login.php');
 ?>
 <!DOCTYPE html>
@@ -10,7 +11,7 @@
     <title>Neighbourhood & Map Directory | Resident Portal</title>
     <link rel="stylesheet" href="member_neigh.css">
     <link rel="stylesheet" href="../../css/master_theme.css">
-    <link rel="shortcut icon" href="Logo3.jpg">
+    <link rel="shortcut icon" href="../../home/logo.svg">
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -95,7 +96,7 @@
 <body>
     <div class="sidebar">
         <div class="logo-details">
-            <i><img src="logo.svg" alt="logo" width="46" height="46"></i>
+            <i><img src="../../home/logo.svg" alt="logo" width="46" height="46"></i>
             <span class="logo_name">HMS</span>
         </div>
         <ul class="nav-links">
@@ -127,12 +128,6 @@
                 <a href="member_neigh.php" class="active">
                     <i class='bx bx-map'></i>
                     <span class="links_name">Neighbourhood</span>
-                </a>
-            </li>
-            <li>
-                <a href="../Members/index.php">
-                    <i class='bx bx-list-ul'></i>
-                    <span class="links_name">Members</span>
                 </a>
             </li>
             <li>
@@ -185,46 +180,67 @@
             </div>
 
             <div class="loca-grid">
-                <!-- 1. Society Location (Hirna Road) -->
+                <!-- Society location -->
                 <div class="place-card">
                     <div class="map-iframe-wrapper">
-                        <iframe src="https://maps.google.com/maps?q=Hirna+Road,+Satsang+Nagar,+Deoghar,+Jharkhand+814142&t=&z=15&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+                        <iframe src="<?php echo htmlspecialchars(hms_property_map_url(HMS_SOCIETY_ADDRESS, true), ENT_QUOTES, 'UTF-8'); ?>" title="Yadav Living Society location map" loading="lazy"></iframe>
                     </div>
                     <div class="place-info">
                         <div>
-                            <span class="place-tag tag-society"><i class='bx bx-home-alt'></i> Society Main Gate</span>
-                            <h3 class="place-title">Nilayam Heights Housing Society</h3>
+                            <span class="place-tag tag-society"><i class='bx bx-home-alt'></i> Society location</span>
+                            <h3 class="place-title">Yadav Living Community</h3>
                             <p class="place-address">
                                 <i class='bx bx-map-pin' style="color:#4f46e5;"></i>
-                                <b>Hirna Road, Satsang Nagar, Deoghar, Jharkhand 814142</b><br>
-                                Primary residential campus with 24/7 security gate, multi-tier visitor parking, and administration office.
+                                <b><?php echo htmlspecialchars(HMS_SOCIETY_ADDRESS, ENT_QUOTES, 'UTF-8'); ?></b><br>
+                                Society address and map location.
                             </p>
                         </div>
                         <div class="place-footer">
-                            <span style="color:#059669;font-weight:600;"><i class='bx bx-check-shield'></i> 24x7 Guard Post</span>
-                            <a href="https://maps.google.com/?q=Hirna+Road,+Satsang+Nagar,+Deoghar,+Jharkhand+814142" target="_blank" class="btn btn-outline-primary btn-sm">Open in Maps</a>
+                            <span style="color:#059669;font-weight:600;"><i class='bx bx-map-pin'></i> Yadav Living Society</span>
+                            <a href="<?php echo htmlspecialchars(hms_property_map_url(HMS_SOCIETY_ADDRESS), ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm">Open in Maps</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- 2. Academic & AS College Road Location -->
+                <!-- PG location -->
                 <div class="place-card">
                     <div class="map-iframe-wrapper">
-                        <iframe src="https://maps.google.com/maps?q=AS+College+Rd,+Satsang+Nagar,+Deoghar,+Jharkhand+814116&t=&z=15&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+                        <iframe src="<?php echo htmlspecialchars(hms_property_map_url(HMS_PG_ADDRESS, true), ENT_QUOTES, 'UTF-8'); ?>" title="Yadav Living PG location map" loading="lazy"></iframe>
                     </div>
                     <div class="place-info">
                         <div>
-                            <span class="place-tag tag-edu"><i class='bx bx-book-open'></i> College & North Wing Gate</span>
+                            <span class="place-tag tag-edu"><i class='bx bxs-graduation'></i> Student accommodation</span>
+                            <h3 class="place-title">Yadav Living PG</h3>
+                            <p class="place-address">
+                                <i class='bx bx-map-pin' style="color:#0284c7;"></i>
+                                <b><?php echo htmlspecialchars(HMS_PG_ADDRESS, ENT_QUOTES, 'UTF-8'); ?></b><br>
+                                PG address and map location.
+                            </p>
+                        </div>
+                        <div class="place-footer">
+                            <span style="color:#0284c7;font-weight:600;"><i class='bx bx-map-pin'></i> Yadav Living PG</span>
+                            <a href="<?php echo htmlspecialchars(hms_property_map_url(HMS_PG_ADDRESS), ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm">Open in Maps</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nearby academic landmark -->
+                <div class="place-card">
+                    <div class="map-iframe-wrapper">
+                        <iframe src="https://maps.google.com/maps?q=A.S.+College,+Deoghar,+Jharkhand&t=&z=15&ie=UTF8&iwloc=&output=embed" title="A. S. College, Deoghar map" loading="lazy"></iframe>
+                    </div>
+                    <div class="place-info">
+                        <div>
+                            <span class="place-tag tag-edu"><i class='bx bx-book-open'></i> Nearby academic landmark</span>
                             <h3 class="place-title">A. S. College, Deoghar</h3>
                             <p class="place-address">
                                 <i class='bx bx-map-pin' style="color:#b45309;"></i>
-                                <b>AS College Rd, Satsang Nagar, Deoghar, Jharkhand 814116</b><br>
-                                Premier constituent autonomous college. Direct pedestrian access from our society's North Wing gate.
+                                A nearby academic institution in Deoghar.
                             </p>
                         </div>
                         <div class="place-footer">
                             <span style="color:#475569;"><i class='bx bx-phone'></i> +91 6432 222452</span>
-                            <a href="https://maps.google.com/?q=AS+College+Rd,+Satsang+Nagar,+Deoghar,+Jharkhand+814116" target="_blank" class="btn btn-outline-primary btn-sm">Open in Maps</a>
+                            <a href="https://www.google.com/maps/search/?api=1&amp;query=A.S.%20College%2C%20Deoghar%2C%20Jharkhand" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm">Open in Maps</a>
                         </div>
                     </div>
                 </div>
@@ -241,7 +257,7 @@
                             <p class="place-address">
                                 <i class='bx bx-map-pin' style="color:#dc2626;"></i>
                                 <b>Near Satsang Ashram, Satsang Nagar, Deoghar, Jharkhand 814142</b><br>
-                                Designated jurisdiction police chowki providing 24x7 night patrol along Hirna Road and AS College Road.
+                                Local police outpost in the Satsang Nagar area.
                             </p>
                         </div>
                         <div class="place-footer">

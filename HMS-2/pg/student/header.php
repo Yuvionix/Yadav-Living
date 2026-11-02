@@ -2,7 +2,7 @@
 require_once(__DIR__ . "/../Includes/session.php");
 require_pg_role('student', '../login.php');
 
-$current_student_id = isset($_SESSION['pg_student_id']) ? (int)$_SESSION['pg_student_id'] : 1;
+$current_student_id = hms_pg_current_student_id();
 
 // Fetch active student profile info
 $q_stu = mysqli_query($con, "SELECT s.*, r.room_number, r.floor, r.occupancy_type, b.bed_label 
@@ -11,6 +11,10 @@ $q_stu = mysqli_query($con, "SELECT s.*, r.room_number, r.floor, r.occupancy_typ
                              LEFT JOIN pg_beds b ON s.bed_id = b.id 
                              WHERE s.id = $current_student_id LIMIT 1");
 $current_student = mysqli_fetch_assoc($q_stu);
+if (!$current_student) {
+    http_response_code(403);
+    exit('Student account is unavailable. Please contact the PG warden.');
+}
 $active_page = basename($_SERVER['PHP_SELF'], ".php");
 ?>
 <!DOCTYPE html>
@@ -18,7 +22,7 @@ $active_page = basename($_SERVER['PHP_SELF'], ".php");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($page_title) ? $page_title : 'Student Portal'; ?> | Yadav PG for Stay</title>
+    <title><?php echo isset($page_title) ? $page_title : 'Student Portal'; ?> | Yadav Living</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
     <style>
@@ -63,6 +67,12 @@ $active_page = basename($_SERVER['PHP_SELF'], ".php");
         }
         .pg-logo i {
             font-size: 24px;
+        }
+        .pg-logo img {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            flex-shrink: 0;
         }
         .pg-nav-list {
             list-style: none;
@@ -364,8 +374,8 @@ $active_page = basename($_SERVER['PHP_SELF'], ".php");
     <!-- Sky-Blue Sidebar -->
     <aside class="pg-sidebar" id="pgSidebar">
         <a href="profile.php" class="pg-logo">
-            <i class='bx bxs-institution'></i>
-            <span>YADAV.IN</span>
+            <img src="../../home/logo.svg" alt="">
+            <span>Yadav Living</span>
         </a>
 
         <ul class="pg-nav-list">
@@ -405,6 +415,12 @@ $active_page = basename($_SERVER['PHP_SELF'], ".php");
                     <span class="link-text">Payments & Receipts</span>
                 </a>
             </li>
+            <li class="pg-nav-item">
+                <a href="../../assistant.php?property=pg" class="pg-nav-link <?php echo ($active_page === 'assistant') ? 'active' : ''; ?>">
+                    <i class='bx bx-bot'></i>
+                    <span class="link-text">PG AI Assistant</span>
+                </a>
+            </li>
         </ul>
 
         <div class="pg-bottom-nav">
@@ -425,7 +441,7 @@ $active_page = basename($_SERVER['PHP_SELF'], ".php");
             <button type="button" class="toggle-btn" id="sidebarToggle" aria-label="Toggle Sidebar">
                 <i class='bx bx-menu'></i>
             </button>
-            <span class="pg-property-name">Yadav PG for Stay</span>
+            <span class="pg-property-name">Yadav Living PG</span>
             <span style="background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; border: 1px solid #fcd34d; box-shadow: 0 2px 6px rgba(245, 158, 11, 0.15);">
                 <i class='bx bxs-sun' style='color:#f59e0b;'></i> जय श्री कृष्णा
             </span>
@@ -437,15 +453,15 @@ $active_page = basename($_SERVER['PHP_SELF'], ".php");
                     <?php 
                         $header_photo = "";
                         if (!empty($current_student['photo'])) {
-                            if (file_exists(__DIR__ . "/../uploads/" . $current_student['photo'])) {
-                                $header_photo = "../uploads/" . htmlspecialchars($current_student['photo']);
+                            if (hms_kyc_file_path('pg', $current_student['photo']) !== false) {
+                                $header_photo = hms_kyc_download_url('pg', $current_student['photo']);
                             } elseif (file_exists(__DIR__ . "/../assets/" . $current_student['photo'])) {
                                 $header_photo = "../assets/" . htmlspecialchars($current_student['photo']);
                             }
                         }
                     ?>
                     <?php if (!empty($header_photo)): ?>
-                        <img src="<?php echo $header_photo; ?>" alt="Profile">
+                        <img src="<?php echo htmlspecialchars($header_photo, ENT_QUOTES, 'UTF-8'); ?>" alt="Profile">
                     <?php else: ?>
                         <?php echo strtoupper(substr($current_student['name'] ?? 'Y', 0, 1)); ?>
                     <?php endif; ?>
@@ -460,7 +476,7 @@ $active_page = basename($_SERVER['PHP_SELF'], ".php");
             <div class="profile-popover" id="profilePopover">
                 <div class="popover-header">
                     <strong><?php echo htmlspecialchars($current_student['name'] ?? 'Yuvraj Yadav'); ?></strong>
-                    <small>Bed: <?php echo htmlspecialchars($current_student['room_number'] ?? 'R-406'); ?> (<?php echo htmlspecialchars($current_student['bed_label'] ?? 'Bed B'); ?>)</small>
+                    <small>Room: <?php echo htmlspecialchars($current_student['room_number'] ?? 'Not assigned', ENT_QUOTES, 'UTF-8'); ?><?php if (!empty($current_student['bed_label'])): ?> (<?php echo htmlspecialchars($current_student['bed_label'], ENT_QUOTES, 'UTF-8'); ?>)<?php endif; ?></small>
                 </div>
                 <a href="profile.php" class="popover-item"><i class='bx bx-user'></i> My Profile</a>
                 <a href="payments.php" class="popover-item"><i class='bx bx-receipt'></i> Payment Receipts</a>

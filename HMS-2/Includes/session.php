@@ -6,6 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
     // Only send cookies over HTTP/HTTPS; prevent client script access
     ini_set('session.cookie_httponly', '1');
     ini_set('session.use_only_cookies', '1');
+    ini_set('session.cookie_secure', strtolower((string)hms_env('APP_ENV', 'local')) === 'production' ? '1' : '0');
     session_start();
 }
 
@@ -83,7 +84,16 @@ function require_role($allowed_roles, $fallback_redirect = null) {
     
     // Check role authorization
     $user_role = isset($_SESSION['account']) ? $_SESSION['account'] : '';
-    if (!in_array($user_role, $allowed_roles, true)) {
+    $has_valid_identity = true;
+    if ($user_role === 'member') {
+        $has_valid_identity = hms_current_member_id() > 0;
+    } elseif ($user_role === 'admin') {
+        $has_valid_identity = hms_current_admin_id() > 0;
+    } elseif ($user_role === 'staff') {
+        $has_valid_identity = hms_current_admin_id() > 0;
+    }
+
+    if (!in_array($user_role, $allowed_roles, true) || !$has_valid_identity) {
         http_response_code(403);
         echo "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>Access Denied</title>";
         echo "<link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css'></head>";
@@ -96,6 +106,46 @@ function require_role($allowed_roles, $fallback_redirect = null) {
         echo "</div></div></body></html>";
         exit;
     }
+}
+
+function hms_current_member_id() {
+    if (($_SESSION['account'] ?? '') !== 'member') {
+        return 0;
+    }
+
+    return max(0, (int)($_SESSION['uid'] ?? $_SESSION['member_id'] ?? 0));
+}
+
+function hms_current_admin_id() {
+    if (($_SESSION['account'] ?? '') === 'admin') {
+        return max(0, (int)($_SESSION['admin_id'] ?? $_SESSION['aid'] ?? 0));
+    }
+
+    if (($_SESSION['account'] ?? '') === 'staff') {
+        return max(0, (int)($_SESSION['aid'] ?? 0));
+    }
+
+    return 0;
+}
+
+function hms_clear_portal_auth_state() {
+    unset(
+        $_SESSION['logged'],
+        $_SESSION['account'],
+        $_SESSION['uid'],
+        $_SESSION['member_id'],
+        $_SESSION['aid'],
+        $_SESSION['admin_id'],
+        $_SESSION['username'],
+        $_SESSION['email'],
+        $_SESSION['pg_logged'],
+        $_SESSION['pg_role'],
+        $_SESSION['pg_student_id'],
+        $_SESSION['pg_admin_id'],
+        $_SESSION['pg_name'],
+        $_SESSION['pg_email'],
+        $_SESSION['pg_username']
+    );
 }
 
 // Authentication handling for login submissions
@@ -119,7 +169,7 @@ if ($logged !== true) {
                         // Check if hash matches BCrypt/Argon or legacy plaintext
                         if (password_verify($input_password, $hash)) {
                             $authenticated = true;
-                        } elseif ($hash === $input_password) {
+                        } elseif (!str_starts_with($hash, '$') && hash_equals($hash, $input_password)) {
                             $authenticated = true;
                             // Transparently migrate plaintext password to secure modern hash
                             $new_hash = password_hash($input_password, PASSWORD_DEFAULT);
@@ -144,9 +194,11 @@ if ($logged !== true) {
             // 1. Check member
             $row = $check_auth('member', 'member');
             if ($row) {
+                hms_clear_portal_auth_state();
                 session_regenerate_id(true);
                 $_SESSION['logged'] = true;
                 $_SESSION['uid'] = (int)$row['id'];
+                $_SESSION['member_id'] = (int)$row['id'];
                 $_SESSION['username'] = $row['username'];
                 $_SESSION['account'] = "member";
                 header("Location: members/Dashboard/member.php");
@@ -156,6 +208,7 @@ if ($logged !== true) {
             // 2. Check admin
             $row = $check_auth('admin', 'admin');
             if ($row) {
+                hms_clear_portal_auth_state();
                 session_regenerate_id(true);
                 $_SESSION['logged'] = true;
                 $_SESSION['aid'] = (int)$row['id'];
@@ -168,6 +221,7 @@ if ($logged !== true) {
             // 3. Check staff
             $row = $check_auth('staff', 'staff');
             if ($row) {
+                hms_clear_portal_auth_state();
                 session_regenerate_id(true);
                 $_SESSION['logged'] = true;
                 $_SESSION['aid'] = (int)$row['id'];

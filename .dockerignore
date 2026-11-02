@@ -4,3 +4,11 @@
 *.log
 scratch/
 brain/
+.env
+.env.*
+**/.env
+**/.env.*
+*.sql
+**/*.sql
+HMS-2/pg/uploads/**
+HMS-2/uploads/society_kyc/**

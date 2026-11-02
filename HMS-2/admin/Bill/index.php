@@ -2,7 +2,6 @@
   require_once("../../Includes/config.php"); 
   require_once("../../Includes/session.php"); 
   require_role('admin', '../../login.php');
-  include('header.php'); 
 ?>
 
 <!DOCTYPE html>
@@ -11,25 +10,22 @@
 
 <head>
     <meta charset="UTF-8">
+    <title>Maintenance Billing | Yadav Living</title>
+    <?php include('header.php'); ?>
    
     <link rel="stylesheet" href="billing.css">
-    <link rel="shortcut icon" href="Logo3.jpg">
+    <link rel="shortcut icon" href="../../home/logo.svg">
 
-    <script>
-        vard = new Date();
-        document.getElementById("datetime").innerHTML = dt.toLocaleString();
-    </script>
-    
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../css/master_theme.css">
+    <script defer src="../../js/dashboard-ui.js"></script>
 </head>
 
-<body>
+<body class="dashboard-page society-section-page">
     <div class="sidebar">
         <div class="logo-details">
-            <i><img src="logo.svg" alt="logo" width="46" height="46" style="border-radius:10px;box-shadow:0 4px 12px rgba(99,102,241,0.25);"></i>
-            <span class="logo_name">HMS</span>
+            <i><img src="../../home/logo.svg" alt="" width="46" height="46"></i>
+            <span class="logo_name">Yadav Living</span>
         </div>
         <ul class="nav-links">
             <li>
@@ -108,9 +104,21 @@
             </li>
         </ul>
     </div>
+    <button class="dashboard-nav-backdrop" id="societyNavBackdrop" type="button" aria-label="Close dashboard navigation"></button>
     <section class="home-section">
-      
-
+        <nav>
+            <div class="sidebar-button">
+                <button class="sidebarBtn" type="button" aria-label="Open dashboard navigation" aria-expanded="true">
+                    <i class='bx bx-menu' aria-hidden="true"></i>
+                </button>
+                <span>Maintenance &amp; Billing</span>
+            </div>
+            <div class="profile-details">
+                <div class="user-avatar-circle"><?php echo strtoupper(substr($_SESSION["username"] ?? 'Y', 0, 1)); ?></div>
+                <span class="admin_name"><?php echo htmlspecialchars($_SESSION["username"] ?? 'Admin'); ?></span>
+            </div>
+        </nav>
+        <div class="home-content">
   <div id="view-panel">
       <?php 
         $allowed_pages = array('billing', 'manage_billing', 'view_bill', 'manage_payment');
@@ -118,6 +126,8 @@
         include $page . '.php';
       ?>
 </div>
+        </div>
+    </section>
 
 <div class="modal fade" id="confirm_modal" role='dialog'>
     <div class="modal-dialog modal-md" role="document">
@@ -158,7 +168,6 @@
       </div>
     </div>
   </div>
-</body>
 <script>
 	 window.start_load = function(){
     $('body').prepend('<di id="preloader2"></di>')
@@ -252,15 +261,6 @@ window._conf = function($msg='',$func='',$params = []){
     width: "100%"
   })
 </script>	
-<script>
-        let sidebar = document.querySelector(".sidebar");
-        let sidebarBtn = document.querySelector(".sidebarBtn");
-        sidebarBtn.onclick = function () {
-            sidebar.classList.toggle("active");
-            if (sidebar.classList.contains("active")) {
-                sidebarBtn.classList.replace("bx-menu", "bx-menu-alt-right");
-            } else
-                sidebarBtn.classList.replace("bx-menu-alt-right", "bx-menu");
-        }
-    </script>
+
+</body>
 </html>

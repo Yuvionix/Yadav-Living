@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="billing.css">
     <link rel="stylesheet" href="admin_view_mem.css">
     <link rel="stylesheet" href="../../css/master_theme.css">
-    <link rel="shortcut icon" href="logo.svg">
+    <link rel="icon" type="image/svg+xml" href="../../home/logo.svg">
 
 
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
@@ -26,9 +26,9 @@
 <body>
     <div class="sidebar">
         <div class="logo-details">
-            <i><img src="logo.svg"
-                 alt="logo" width="46" height="46" style="border-radius:10px;box-shadow:0 4px 12px rgba(99,102,241,0.25);"></i>
-            <span class="logo_name">HMS</span>
+            <i><img src="../../home/logo.svg"
+                 alt="" width="46" height="46" style="border-radius:10px;box-shadow:0 4px 12px rgba(99,102,241,0.25);"></i>
+            <span class="logo_name">Yadav Living</span>
         </div>
         <ul class="nav-links">
             <li>

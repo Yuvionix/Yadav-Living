@@ -9,7 +9,7 @@ $current_day = date('l');
 <div class="page-title-banner">
     <div>
         <h2>WEEKLY MESS & MEAL MENU</h2>
-        <p style="font-size: 13px; color: #64748b; margin-top: 2px;">Nutritious, hygienic food schedule prepared daily at Yadav PG for Stay Kitchen.</p>
+        <p style="font-size: 13px; color: #64748b; margin-top: 2px;">Nutritious, hygienic food schedule prepared daily at Yadav Living PG Kitchen.</p>
     </div>
     <div style="background: #e0f2fe; color: #0369a1; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;">
         Today is: <b><?php echo $current_day; ?></b>

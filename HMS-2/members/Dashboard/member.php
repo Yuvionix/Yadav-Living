@@ -1,9 +1,10 @@
 <?php 
   require_once("../../Includes/config.php"); 
   require_once("../../Includes/session.php"); 
+  require_once("../../Includes/property_locations.php");
   require_role(array('member', 'admin'), '../../login.php');
 
-  $mem_id = (int)($_SESSION['member_id'] ?? 0);
+  $mem_id = hms_current_member_id();
   $chk_kyc = mysqli_query($con, "SELECT status FROM society_kyc WHERE member_id = $mem_id LIMIT 1");
   $kyc_data = mysqli_fetch_assoc($chk_kyc);
   $mem_kyc_status = $kyc_data['status'] ?? 'Not Submitted';
@@ -12,22 +13,22 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <title>Resident Dashboard | Nilayam Heights HMS</title>
-    <meta name="description" content="Nilayam Heights HMS Resident Dashboard - Track maintenance billing, read society announcements, and access neighbourhood directory.">
+    <title>Resident Dashboard | Yadav Living</title>
+    <meta name="description" content="Yadav Living resident dashboard for tracking maintenance bills, community announcements, and local services.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="member.css">
     <link rel="stylesheet" href="../../css/master_theme.css">
-    <link rel="shortcut icon" href="Logo3.jpg"/>
+    <link rel="icon" type="image/svg+xml" href="../../home/logo.svg">
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
 </head>
 
-<body>
-    <div class="sidebar">
+<body class="dashboard-page dashboard-resident-page">
+    <div class="sidebar" id="residentSidebar">
         <div class="logo-details">
-            <i><img src="logo.svg" alt="logo" width="46" height="46"></i>
-            <span class="logo_name">HMS</span>
+            <i><img src="../../home/logo.svg" alt="" width="46" height="46"></i>
+            <span class="logo_name">Yadav Living</span>
         </div>
         <ul class="nav-links">
             <li>
@@ -58,12 +59,6 @@
                 <a href="../Neighbourhood/member_neigh.php">
                     <i class='bx bx-map'></i>
                     <span class="links_name">Neighbourhood</span>
-                </a>
-            </li>
-            <li>
-                <a href="../Members/index.php">
-                    <i class='bx bx-list-ul'></i>
-                    <span class="links_name">Members</span>
                 </a>
             </li>
             <li>
@@ -99,7 +94,7 @@
             <li style="background: rgba(14, 165, 233, 0.12); border-radius: 8px; margin: 6px 0;">
                 <a href="../../pg/index.php">
                     <i class='bx bxs-institution' style="color: #38bdf8;"></i>
-                    <span class="links_name" style="color: #38bdf8; font-weight: 600;">Yadav PG for Stay</span>
+                    <span class="links_name" style="color: #38bdf8; font-weight: 600;">Yadav Living PG</span>
                 </a>
             </li>
             <li class="log_out">
@@ -114,7 +109,9 @@
     <section class="home-section">
         <nav>
             <div class="sidebar-button" style="display: flex; align-items: center; gap: 14px;">
-                <i class='bx bx-menu sidebarBtn'></i>
+                <button class="sidebarBtn" type="button" aria-label="Open dashboard navigation" aria-controls="residentSidebar" aria-expanded="true">
+                    <i class='bx bx-menu' aria-hidden="true"></i>
+                </button>
                 <span class="dashboard">Resident Portal</span>
                 <span style="background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; padding: 4px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; border: 1px solid #fcd34d; box-shadow: 0 2px 6px rgba(245, 158, 11, 0.15);">
                     <i class='bx bxs-sun' style='color:#f59e0b;'></i> जय श्री कृष्णा
@@ -151,18 +148,19 @@
             </div>
         </nav>
 
-        <div class="home-content" style="padding: 92px 24px 24px 24px;">
+        <div class="home-content">
             <!-- 3D Society Hero Banner -->
             <div class="dashboard-3d-banner">
                 <div class="banner-text">
-                    <div class="badge-location">
-                        <i class='bx bx-map-pin'></i> Satsang Nagar, Deoghar, Jharkhand
-                    </div>
-                    <h2>Welcome to Nilayam Heights</h2>
-                    <p>Resident management portal. View October 2026 maintenance dues, community announcements, nearby Deoghar services, and talk to your 24/7 AI Assistant.</p>
+                    <a class="badge-location" href="<?php echo htmlspecialchars(hms_property_map_url(HMS_SOCIETY_ADDRESS), ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
+                        <i class='bx bx-map-pin'></i> <?php echo htmlspecialchars(HMS_SOCIETY_ADDRESS, ENT_QUOTES, 'UTF-8'); ?>
+                    </a>
+                    <span class="dashboard-story-kicker">Your home, connected</span>
+                    <h2>Welcome home to Yadav Living.</h2>
+                    <p>Keep up with the people and moments that make this community feel like home. Your bills, notices, local services, and resident support are here when you need them.</p>
                     <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px;">
                         <a href="../Chat/ai_assistant.php" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:10px;font-size:13px;font-weight:600;">
-                            <i class='bx bx-bot'></i> Ask Society AI Assistant
+                            <i class='bx bx-bot'></i> Ask your community assistant
                         </a>
                         <a href="../Bill/index.php" class="btn" style="display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:10px;font-size:13px;font-weight:600;background:rgba(255,255,255,0.12);color:#fff;border:1px solid rgba(255,255,255,0.22);text-decoration:none;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">
                             <i class='bx bx-credit-card'></i> View My Bill
@@ -174,17 +172,13 @@
 
             <!-- Clickable Interactive Metric Cards -->
             <div class="overview-boxes">
-                <a href="../Members/index.php" class="box" style="text-decoration: none; color: inherit; cursor: pointer; transition: all 0.25s ease;">
+                <a href="../kyc.php" class="box" style="text-decoration: none; color: inherit; cursor: pointer; transition: all 0.25s ease;">
                     <div class="right-side">
                         <div class="box-topic" style="display: flex; align-items: center; justify-content: space-between;">
-                            <span>Community Members</span>
+                            <span>Your Resident KYC</span>
                             <span style="font-size: 11px; color: #6366f1; font-weight: 600;">View &rarr;</span>
                         </div>
-                        <?php
-                            $res_m = mysqli_query($con, "SELECT COUNT(*) as cnt FROM member");
-                            $row_m = mysqli_fetch_assoc($res_m);
-                        ?>  
-                        <div class="number"><?php echo $row_m['cnt']; ?></div>
+                        <div class="number" style="font-size: 22px;"><?php echo htmlspecialchars($mem_kyc_status); ?></div>
                     </div>
                     <i class='bx bxs-user icon member'></i>
                 </a>
@@ -211,7 +205,7 @@
                             <span style="font-size: 11px; color: #10b981; font-weight: 600;">Pay / View &rarr;</span>
                         </div>
                         <?php
-                            $uid = isset($_SESSION['uid']) ? (int)$_SESSION['uid'] : 1;
+                            $uid = hms_current_member_id();
                             $cur_m = date('Y-m');
                             $res_mybill = mysqli_query($con, "SELECT status, total_amount FROM billing WHERE member_id = $uid AND date_format(billing_date,'%Y-%m') = '$cur_m' LIMIT 1");
                             $mybill = mysqli_fetch_assoc($res_mybill);
@@ -220,7 +214,7 @@
                             <?php if($mybill && $mybill['status'] == 1): ?>
                                 <span style="color:#10b981;font-size:22px;">Paid</span>
                             <?php else: ?>
-                                <span style="color:#f59e0b;font-size:22px;">₹<?php echo $mybill ? number_format($mybill['total_amount']) : '4,500'; ?> Due</span>
+                                <span style="color:#f59e0b;font-size:22px;"><?php echo $mybill ? '₹' . number_format($mybill['total_amount']) . ' Due' : 'No bill yet'; ?></span>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -260,55 +254,13 @@
                     </div>  
                 </div>
 
-                <div class="members box">
-                    <div class="title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                        <span><i class='bx bx-user' style="color:#6366f1;margin-right:6px;"></i> Fellow Residents</span>
-                        <a href="../Members/index.php" class="btn btn-outline-primary btn-sm" style="font-size:12px;padding:4px 12px;border-radius:8px;text-decoration:none;">Directory</a>
-                    </div>
-                    <div class="registry-details">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th class="text-center">#</th>
-                                    <th>Resident</th>
-                                    <th>Flat / Location</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                    $members = $con->query("SELECT * FROM member ORDER BY id ASC LIMIT 4");
-                                    $i = 1;
-                                    while($m = $members->fetch_assoc()):
-                                ?>
-                                <tr>
-                                    <td class="text-center" style="font-weight:700;color:#64748b;"><?php echo $i++; ?></td>
-                                    <td><b><?php echo htmlspecialchars($m['username']); ?></b></td>
-                                    <td><span style="font-size:12px;color:#64748b;"><?php echo htmlspecialchars(substr($m['address'] ?? '', 0, 30)) . '...'; ?></span></td>
-                                </tr>
-                                <?php endwhile; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
 
-    <!-- Local Three.js and 3D Society Simulation (Deferred for high performance) -->
-    <script src="../../js/vendor/three.min.js" defer></script>
-    <script src="../../js/3d_society.js" defer></script>
+    <button class="dashboard-nav-backdrop" id="societyNavBackdrop" type="button" aria-label="Close dashboard navigation"></button>
 
     <script>
-        let sidebar = document.querySelector(".sidebar");
-        let sidebarBtn = document.querySelector(".sidebarBtn");
-        sidebarBtn.onclick = function () {
-            sidebar.classList.toggle("active");
-            if (sidebar.classList.contains("active")) {
-                sidebarBtn.classList.replace("bx-menu", "bx-menu-alt-right");
-            } else
-                sidebarBtn.classList.replace("bx-menu-alt-right", "bx-menu");
-        };
-
         // Resident profile dropdown
         const memberProfileBtn = document.getElementById('memberProfileDropdownBtn');
         const memberProfileDropdown = document.getElementById('memberProfileDropdown');

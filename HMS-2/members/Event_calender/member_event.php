@@ -11,7 +11,7 @@
     <meta charset="UTF-8">
 
     <link rel="stylesheet" href="member_event.css">
-    <link rel="shortcut icon" href="Logo3.jpg">
+    <link rel="shortcut icon" href="../../home/logo.svg">
 
     
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
@@ -22,7 +22,7 @@
 <body>
     <div class="sidebar">
         <div class="logo-details">
-            <i><img src="logo.svg" alt="logo" width="46" height="46" style="border-radius:10px;box-shadow:0 4px 12px rgba(99,102,241,0.25);"></i>
+            <i><img src="../../home/logo.svg" alt="logo" width="46" height="46" style="border-radius:10px;box-shadow:0 4px 12px rgba(99,102,241,0.25);"></i>
             <span class="logo_name">HMS</span>
         </div>
         <ul class="nav-links">
@@ -54,12 +54,6 @@
                 <a href="../Neighbourhood/member_neigh.php">
                     <i class='bx bx-map'></i>
                     <span class="links_name">Neighbourhood</span>
-                </a>
-            </li>
-            <li>
-                <a href="../Members/index.php">
-                    <i class='bx bx-list-ul'></i>
-                    <span class="links_name">Members</span>
                 </a>
             </li>
             <li>

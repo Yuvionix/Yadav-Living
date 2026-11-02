@@ -6,14 +6,42 @@ services:
     ports:
       - "8080:80"
     environment:
-      - DB_HOST=db
-      - DB_USER=root
-      - DB_PASS=rootpassword
-      - DB_NAME=hms
-      - DB_PORT=3306
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8080
+      DB_HOST: db
+      DB_USER: hms_app
+      DB_PASS: ${DB_PASS:?Set DB_PASS in your local .env file}
+      DB_NAME: hms
+      DB_PORT: 3306
+      HMS_PRIVATE_UPLOAD_DIR: /var/lib/nilayam-hms/uploads
+      AI_SERVICE_URL: http://ai:8000
+      AI_SERVICE_TOKEN: ${AI_SERVICE_TOKEN:?Set AI_SERVICE_TOKEN in your local .env file}
+    volumes:
+      - hms_uploads:/var/lib/nilayam-hms/uploads
     depends_on:
       db:
         condition: service_healthy
+      ai:
+        condition: service_healthy
+    networks:
+      - hms_network
+
+  ai:
+    build:
+      context: ./ai_service
+    container_name: hms_ai
+    restart: unless-stopped
+    environment:
+      AI_SERVICE_TOKEN: ${AI_SERVICE_TOKEN:?Set AI_SERVICE_TOKEN in your local .env file}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
     networks:
       - hms_network
 
@@ -22,15 +50,15 @@ services:
     container_name: hms_db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Set DB_ROOT_PASSWORD in your local .env file}
       MYSQL_DATABASE: hms
-    ports:
-      - "3307:3306"
+      MYSQL_USER: hms_app
+      MYSQL_PASSWORD: ${DB_PASS:?Set DB_PASS in your local .env file}
     volumes:
       - db_data:/var/lib/mysql
       - ./HMS-2/hms.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p\"$$MYSQL_ROOT_PASSWORD\""]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -39,6 +67,7 @@ services:
 
 volumes:
   db_data:
+  hms_uploads:
 
 networks:
   hms_network:

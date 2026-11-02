@@ -104,7 +104,7 @@ $q_vac = mysqli_query($con, "SELECT * FROM pg_vacate_intimations WHERE student_i
         <form method="POST" action="vacate.php">
             <div class="modal-box-body">
                 <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 12px; color: #64748b;">
-                    <i class='bx bx-info-circle' style="color: #0099e5;"></i> As per PG policy, a 30-day prior notice is required before vacating to process full security deposit refund (₹<?php echo number_format($current_student['deposit_amount'] ?? 13000); ?>).
+                    <i class='bx bx-info-circle' style="color: #0099e5;"></i> As per PG policy, a 30-day prior notice is required before vacating to process the agreed security deposit refund (₹<?php echo number_format((float)($current_student['deposit_amount'] ?? 0), 2); ?>).
                 </div>
 
                 <div style="margin-bottom: 16px;">

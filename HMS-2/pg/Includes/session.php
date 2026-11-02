@@ -5,6 +5,7 @@ require_once(__DIR__ . "/../../Includes/config.php");
 if (session_status() === PHP_SESSION_NONE) {
     ini_set('session.cookie_httponly', '1');
     ini_set('session.use_only_cookies', '1');
+    ini_set('session.cookie_secure', strtolower((string)hms_env('APP_ENV', 'local')) === 'production' ? '1' : '0');
     session_start();
 }
 
@@ -30,7 +31,10 @@ function require_pg_role($allowed_roles = array('student', 'admin'), $redirect =
     }
 
     $current_role = isset($_SESSION['pg_role']) ? $_SESSION['pg_role'] : '';
-    if (!in_array($current_role, $allowed_roles, true)) {
+    $identity_id = $current_role === 'student'
+        ? hms_pg_current_student_id()
+        : (int)($_SESSION['pg_admin_id'] ?? 0);
+    if (!in_array($current_role, $allowed_roles, true) || $identity_id < 1) {
         http_response_code(403);
         echo "<!DOCTYPE html><html><head><title>Access Denied</title>";
         echo "<link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css'></head>";
@@ -39,5 +43,33 @@ function require_pg_role($allowed_roles = array('student', 'admin'), $redirect =
         echo "<a href='" . htmlspecialchars($redirect) . "' class='btn btn-primary'>Back to PG Login</a></div></body></html>";
         exit;
     }
+}
+
+function hms_pg_current_student_id() {
+    if (($_SESSION['pg_role'] ?? '') !== 'student') {
+        return 0;
+    }
+
+    return max(0, (int)($_SESSION['pg_student_id'] ?? 0));
+}
+
+function hms_pg_clear_portal_auth_state() {
+    unset(
+        $_SESSION['logged'],
+        $_SESSION['account'],
+        $_SESSION['uid'],
+        $_SESSION['member_id'],
+        $_SESSION['aid'],
+        $_SESSION['admin_id'],
+        $_SESSION['username'],
+        $_SESSION['email'],
+        $_SESSION['pg_logged'],
+        $_SESSION['pg_role'],
+        $_SESSION['pg_student_id'],
+        $_SESSION['pg_admin_id'],
+        $_SESSION['pg_name'],
+        $_SESSION['pg_email'],
+        $_SESSION['pg_username']
+    );
 }
 ?>

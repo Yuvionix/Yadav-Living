@@ -1,11 +1,11 @@
 /**
  * ==============================================================================
- * 🌟 NILAYAM HEIGHTS & YADAV PG - 3D INTERACTIVE TWIN-CAMPUS ENGINE
+ * 🌟 YADAV LIVING SOCIETY & PG - 3D INTERACTIVE TWIN-CAMPUS ENGINE
  * ==============================================================================
  * Engineered by Yuvraj
  * 
  * Features:
- * - High-Performance WebGL 3D Architectural Scene (Nilayam Towers + Yadav PG + Gate)
+ * - High-Performance WebGL 3D Architectural Scene (Yadav Living Society + PG + Gate)
  * - Cinematic Camera Tweening (Seamless glide when switching tabs)
  * - Interactive Mouse Orbit & Touch Drag Controls
  * - Dynamic Lighting Presets: Cyber Neon, Sunset Gold, Daylight Clear
@@ -53,18 +53,20 @@
     // -------------------------------------------------------------
     // 2. RENDERER SETUP (Optimized for Mobile & Desktop)
     // -------------------------------------------------------------
-    const isMobile = window.innerWidth < 768;
+    const isMobile = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: window.devicePixelRatio < 2,
+      antialias: !isMobile && window.devicePixelRatio < 2,
       powerPreference: 'high-performance'
     });
 
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1 : 1.75));
     renderer.shadowMap.enabled = !isMobile;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
+    container.classList.add('scene-ready');
 
     // -------------------------------------------------------------
     // 3. DYNAMIC LIGHTING SUITE
@@ -184,7 +186,7 @@
     baseCircle.position.y = -0.08;
     worldGroup.add(baseCircle);
 
-    // B. NILAYAM HEIGHTS COMPLEX (Left Wing)
+    // B. YADAV LIVING SOCIETY (Left Wing)
     // Tower A (Main Society Skyscraper)
     const towerA = createBuildingBlock(-7, 0, -3, 6, 17, 6, matTowerGlass);
     createBuildingBlock(-7, 17, -3, 4, 1.5, 4, matSkyAccent); // Rooftop Penthouse
@@ -295,6 +297,16 @@
       }
     };
 
+    function renderUserUpdate() {
+      if (!prefersReducedMotion && !isMobile) return;
+      camera.position.set(destCamPos.x, destCamPos.y, destCamPos.z);
+      curTarget.x = destTarget.x;
+      curTarget.y = destTarget.y;
+      curTarget.z = destTarget.z;
+      camera.lookAt(curTarget.x, curTarget.y, curTarget.z);
+      renderer.render(scene, camera);
+    }
+
     window.Campus3D.focusView = function (presetName) {
       const preset = cameraPresets[presetName] || cameraPresets.all;
       destCamPos.x = preset.pos.x;
@@ -307,11 +319,12 @@
       // Update badge indicator
       const viewIndicator = document.getElementById('current-3d-view-label');
       if (viewIndicator) {
-        if (presetName === 'society') viewIndicator.textContent = "Focus: Nilayam Heights Society";
+        if (presetName === 'society') viewIndicator.textContent = "Focus: Yadav Living Society";
         else if (presetName === 'pg') viewIndicator.textContent = "Focus: Yadav PG for Stay";
         else if (presetName === 'gate') viewIndicator.textContent = "Focus: Smart Security Gate";
         else viewIndicator.textContent = "Twin-Property Overview";
       }
+      renderUserUpdate();
     };
 
     // -------------------------------------------------------------
@@ -338,26 +351,54 @@
         dirLight1.intensity = 1.8;
         dirLight2.color.setHex(0x38bdf8);
       }
+      renderUserUpdate();
     };
 
     // -------------------------------------------------------------
     // 8. INTERACTIVE DRAG TO ROTATE & MOUSE PARALLAX
     // -------------------------------------------------------------
-    let isAutoRotate = true;
+    let isAutoRotate = !prefersReducedMotion && !isMobile;
     let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
     let mouseParallax = { x: 0, y: 0 };
 
+    function updateRotationButton() {
+      const btn = document.getElementById('btn-toggle-rotate');
+      if (!btn) return;
+      btn.classList.toggle('active', isAutoRotate);
+      btn.innerHTML = isAutoRotate
+        ? "<i class='bx bx-sync bx-spin'></i> Auto-Spin: ON"
+        : "<i class='bx bx-pause-circle'></i> Auto-Spin: OFF";
+      btn.setAttribute('aria-pressed', String(isAutoRotate));
+    }
+
     window.Campus3D.toggleRotation = function () {
       isAutoRotate = !isAutoRotate;
-      const btn = document.getElementById('btn-toggle-rotate');
-      if (btn) {
-        btn.classList.toggle('active', isAutoRotate);
-        btn.innerHTML = isAutoRotate 
-          ? "<i class='bx bx-sync bx-spin'></i> Auto-Spin: ON" 
-          : "<i class='bx bx-pause-circle'></i> Auto-Spin: OFF";
-      }
+      updateRotationButton();
+      scheduleRender();
     };
+
+    container.addEventListener('keydown', function (event) {
+      const step = 0.12;
+      if (event.key === 'ArrowLeft') {
+        worldGroup.rotation.y -= step;
+      } else if (event.key === 'ArrowRight') {
+        worldGroup.rotation.y += step;
+      } else if (event.key === 'ArrowUp') {
+        destCamPos.y = Math.max(8, destCamPos.y - 1);
+      } else if (event.key === 'ArrowDown') {
+        destCamPos.y = Math.min(38, destCamPos.y + 1);
+      } else if (event.key === 'Home') {
+        worldGroup.rotation.y = 0;
+        window.Campus3D.focusView('all');
+      } else {
+        return;
+      }
+
+      event.preventDefault();
+      renderUserUpdate();
+      scheduleRender();
+    });
 
     container.addEventListener('mousedown', function (e) {
       isDragging = true;
@@ -381,6 +422,7 @@
         destCamPos.y = Math.max(8, Math.min(38, destCamPos.y - deltaY * 0.05));
 
         previousMousePosition = { x: e.clientX, y: e.clientY };
+        renderUserUpdate();
       }
     });
 
@@ -405,6 +447,7 @@
         destCamPos.y = Math.max(8, Math.min(38, destCamPos.y - deltaY * 0.06));
 
         previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        renderUserUpdate();
       }
     }, { passive: true });
 
@@ -419,6 +462,7 @@
           camera.aspect = width / height;
           camera.updateProjectionMatrix();
           renderer.setSize(width, height);
+          if (prefersReducedMotion || isMobile) renderer.render(scene, camera);
         }
       }, 150);
     });
@@ -426,19 +470,42 @@
     // -------------------------------------------------------------
     // 9. ANIMATION LOOP WITH THROTTLING & BATTERY SAVING
     // -------------------------------------------------------------
-    let isVisible = true;
-    let isTabFocused = true;
+    let isVisible = isMobile;
+    let isTabFocused = !document.hidden;
+    let frameRequest = 0;
+    function scheduleRender() {
+      if ((prefersReducedMotion || isMobile) && !isAutoRotate) return;
+      if (!frameRequest && isVisible && isTabFocused) {
+        frameRequest = requestAnimationFrame(renderLoop);
+      }
+    }
+
+    function updateRenderActivity() {
+      if (isVisible && isTabFocused) {
+        scheduleRender();
+      } else if (frameRequest) {
+        cancelAnimationFrame(frameRequest);
+        frameRequest = 0;
+      }
+    }
 
     if ('IntersectionObserver' in window) {
       const observer = new IntersectionObserver(function (entries) {
         isVisible = entries[0].isIntersecting;
+        updateRenderActivity();
       }, { threshold: 0.1 });
       observer.observe(container);
+    } else {
+      isVisible = true;
     }
 
     document.addEventListener('visibilitychange', function () {
       isTabFocused = !document.hidden;
+      updateRenderActivity();
     });
+
+    updateRotationButton();
+    if (prefersReducedMotion || isMobile) renderer.render(scene, camera);
 
     let pulseScale = 1;
     let pulseDirection = 1;
@@ -447,12 +514,15 @@
     const frameInterval = 1000 / targetFps;
 
     function renderLoop(currentTime) {
-      requestAnimationFrame(renderLoop);
+      frameRequest = 0;
 
       if (!isVisible || !isTabFocused) return;
 
       const elapsed = currentTime - lastTime;
-      if (elapsed < frameInterval) return;
+      if (elapsed < frameInterval) {
+        scheduleRender();
+        return;
+      }
       lastTime = currentTime - (elapsed % frameInterval);
 
       // Auto rotation
@@ -461,16 +531,18 @@
       }
 
       // Orbital rings rotation
-      ring1.rotation.z += 0.005;
-      ring2.rotation.z -= 0.006;
+      if (!prefersReducedMotion) {
+        ring1.rotation.z += 0.005;
+        ring2.rotation.z -= 0.006;
 
-      // Wi-Fi wave pulsation on Yadav PG roof
-      pulseScale += 0.015 * pulseDirection;
-      if (pulseScale > 1.8) {
-        pulseScale = 0.8;
+        // Wi-Fi wave pulsation on Yadav PG roof
+        pulseScale += 0.015 * pulseDirection;
+        if (pulseScale > 1.8) {
+          pulseScale = 0.8;
+        }
+        wifiRing.scale.set(pulseScale, pulseScale, 1);
+        wifiRingMat.opacity = Math.max(0, 1 - (pulseScale - 0.8) / 1.0);
       }
-      wifiRing.scale.set(pulseScale, pulseScale, 1);
-      wifiRingMat.opacity = Math.max(0, 1 - (pulseScale - 0.8) / 1.0);
 
       // Smooth camera position interpolation
       camera.position.x += (destCamPos.x + mouseParallax.x * 2.5 - camera.position.x) * 0.06;
@@ -483,9 +555,10 @@
 
       camera.lookAt(curTarget.x, curTarget.y, curTarget.z);
       renderer.render(scene, camera);
+      scheduleRender();
     }
 
-    requestAnimationFrame(renderLoop);
+    scheduleRender();
   }
 
   // -------------------------------------------------------------
@@ -493,7 +566,9 @@
   // -------------------------------------------------------------
   function init3DCardTilt() {
     const cards = document.querySelectorAll('.property-card');
-    if (!cards.length) return;
+    const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!cards.length || !supportsHover || prefersReducedMotion) return;
 
     cards.forEach(card => {
       // Add specular glare element if not present

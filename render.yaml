@@ -1,23 +1,31 @@
 # ==============================================================================
-# Nilayam Heights HMS & Yadav PG — Render.com Blueprint (100% Free Tier)
+# Yadav Living — Render.com Blueprint
 # ==============================================================================
-# Deploys as a free Docker Web Service with automatic dynamic port binding
-# and zero-downtime health checking.
+# Uses an external MySQL-compatible database and persistent private KYC storage.
+# The Starter plan is required because Render free web services do not support disks.
 # ==============================================================================
 
 services:
   - type: web
-    name: nilayam-heights-hms
+    name: yadav-living
     runtime: docker
-    plan: free
+    plan: starter
     region: oregon
     branch: main
     healthCheckPath: /home/home.php
+    disk:
+      name: yadav-living-private-uploads
+      mountPath: /var/lib/nilayam-hms/uploads
+      sizeGB: 1
     envVars:
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
         value: "false"
+      - key: HMS_PRIVATE_UPLOAD_DIR
+        value: /var/lib/nilayam-hms/uploads
+      - key: APP_URL
+        sync: false
       - key: DB_HOST
         sync: false
       - key: DB_PORT
@@ -28,3 +36,25 @@ services:
         sync: false
       - key: DB_PASS
         sync: false
+      - key: AI_SERVICE_URL
+        sync: false
+      - key: AI_SERVICE_TOKEN
+        sync: false
+
+  - type: web
+    name: yadav-living-ai
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerContext: ./ai_service
+    dockerfilePath: ./ai_service/Dockerfile
+    healthCheckPath: /healthz
+    envVars:
+      - key: AI_SERVICE_TOKEN
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_BASE_URL
+        value: https://api.openai.com/v1
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini

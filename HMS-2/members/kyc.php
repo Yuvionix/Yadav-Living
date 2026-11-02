@@ -3,21 +3,21 @@ require_once("../Includes/config.php");
 require_once("../Includes/session.php");
 require_role('member', '../login.php');
 
-$member_id = (int)$_SESSION['member_id'];
+$member_id = hms_current_member_id();
 $username = $_SESSION['username'] ?? '';
 $email = $_SESSION['email'] ?? '';
 
 // Helper function to handle file upload
 function handle_society_upload($file_key, $prefix, $default = null) {
     if (isset($_FILES[$file_key]) && $_FILES[$file_key]['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = __DIR__ . "/../uploads/society_kyc/";
+        $upload_dir = hms_kyc_upload_directory('society');
         if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0755, true);
+            mkdir($upload_dir, 0750, true);
         }
         $ext = strtolower(pathinfo($_FILES[$file_key]['name'], PATHINFO_EXTENSION));
         $allowed = array('jpg', 'jpeg', 'png', 'pdf', 'webp');
         if (in_array($ext, $allowed)) {
-            $filename = $prefix . "_" . time() . "_" . rand(100, 999) . "." . $ext;
+            $filename = $prefix . "_" . bin2hex(random_bytes(12)) . "." . $ext;
             $target = $upload_dir . $filename;
             if (move_uploaded_file($_FILES[$file_key]['tmp_name'], $target)) {
                 return $filename;
@@ -42,6 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_society_kyc'])) 
     $full_name = trim(isset($_POST['full_name']) ? $_POST['full_name'] : '');
     $flat_no = trim(isset($_POST['flat_no']) ? $_POST['flat_no'] : '');
     $resident_type = trim(isset($_POST['resident_type']) ? $_POST['resident_type'] : 'Owner');
+    $rent_input = trim(isset($_POST['monthly_rent']) ? $_POST['monthly_rent'] : '');
+    $monthly_rent = $rent_input === '' ? null : (float)$rent_input;
+    $rent_is_valid = $rent_input === '' || (is_numeric($rent_input) && $monthly_rent >= 0);
     $father_or_spouse = trim(isset($_POST['father_or_spouse']) ? $_POST['father_or_spouse'] : '');
     $emergency_phone = trim(isset($_POST['emergency_phone']) ? $_POST['emergency_phone'] : '');
     $permanent_address = trim(isset($_POST['permanent_address']) ? $_POST['permanent_address'] : '');
@@ -55,31 +58,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_society_kyc'])) 
     $addr_front = handle_society_upload('addr_front_file', 'ADDR_F_' . $member_id, $kyc['address_proof_front'] ?? null);
     $addr_back = handle_society_upload('addr_back_file', 'ADDR_B_' . $member_id, $kyc['address_proof_back'] ?? null);
 
-    if (empty($full_name) || empty($flat_no) || empty($emergency_phone) || empty($permanent_address)) {
-        $error_msg = "Please fill in all required fields (Full Name, Flat No, Emergency Phone, and Permanent Address).";
+    if (empty($full_name) || empty($flat_no) || empty($emergency_phone) || empty($permanent_address) ||
+        !in_array($resident_type, array('Owner', 'Tenant', 'Family Member'), true) ||
+        !$rent_is_valid ||
+        ($resident_type === 'Tenant' && ($monthly_rent === null || $monthly_rent <= 0)) ||
+        ($monthly_rent !== null && $monthly_rent < 0)) {
+        $error_msg = "Please provide valid resident and flat details. Monthly rent is required for tenants.";
     } elseif (!$terms_accepted) {
         $error_msg = "You must accept the society terms and conditions to submit KYC.";
     } else {
         if ($kyc) {
             // Update existing
-            $stmt = mysqli_prepare($con, "UPDATE society_kyc SET full_name = ?, flat_no = ?, resident_type = ?, father_or_spouse = ?, emergency_phone = ?, permanent_address = ?, profile_pic = ?, id_proof_type = ?, id_proof_front = ?, id_proof_back = ?, address_proof_front = ?, address_proof_back = ?, terms_accepted = ?, status = 'Pending', submitted_at = NOW() WHERE member_id = ?");
+            $stmt = mysqli_prepare($con, "UPDATE society_kyc SET full_name = ?, flat_no = ?, resident_type = ?, father_or_spouse = ?, emergency_phone = ?, permanent_address = ?, profile_pic = ?, id_proof_type = ?, id_proof_front = ?, id_proof_back = ?, address_proof_front = ?, address_proof_back = ?, monthly_rent = ?, terms_accepted = ?, status = 'Pending', submitted_at = NOW() WHERE member_id = ?");
             if ($stmt) {
-                mysqli_stmt_bind_param($stmt, "ssssssssssssii", $full_name, $flat_no, $resident_type, $father_or_spouse, $emergency_phone, $permanent_address, $profile_pic, $id_proof_type, $id_front, $id_back, $addr_front, $addr_back, $terms_accepted, $member_id);
-                mysqli_stmt_execute($stmt);
+                mysqli_stmt_bind_param($stmt, "ssssssssssssdii", $full_name, $flat_no, $resident_type, $father_or_spouse, $emergency_phone, $permanent_address, $profile_pic, $id_proof_type, $id_front, $id_back, $addr_front, $addr_back, $monthly_rent, $terms_accepted, $member_id);
+                if (!mysqli_stmt_execute($stmt)) {
+                    error_log("Society KYC update failed: " . mysqli_stmt_error($stmt));
+                    $error_msg = "Your resident details could not be saved. Please try again.";
+                }
                 mysqli_stmt_close($stmt);
+            } else {
+                error_log("Society KYC update prepare failed: " . mysqli_error($con));
+                $error_msg = "Your resident details could not be saved. Please try again.";
             }
         } else {
             // Insert new
-            $stmt = mysqli_prepare($con, "INSERT INTO society_kyc (member_id, full_name, flat_no, resident_type, father_or_spouse, emergency_phone, permanent_address, profile_pic, id_proof_type, id_proof_front, id_proof_back, address_proof_front, address_proof_back, terms_accepted, status, submitted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', NOW())");
+            $stmt = mysqli_prepare($con, "INSERT INTO society_kyc (member_id, full_name, flat_no, resident_type, father_or_spouse, emergency_phone, permanent_address, profile_pic, id_proof_type, id_proof_front, id_proof_back, address_proof_front, address_proof_back, monthly_rent, terms_accepted, status, submitted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', NOW())");
             if ($stmt) {
-                mysqli_stmt_bind_param($stmt, "issssssssssssi", $member_id, $full_name, $flat_no, $resident_type, $father_or_spouse, $emergency_phone, $permanent_address, $profile_pic, $id_proof_type, $id_front, $id_back, $addr_front, $addr_back, $terms_accepted);
-                mysqli_stmt_execute($stmt);
+                mysqli_stmt_bind_param($stmt, "issssssssssssdi", $member_id, $full_name, $flat_no, $resident_type, $father_or_spouse, $emergency_phone, $permanent_address, $profile_pic, $id_proof_type, $id_front, $id_back, $addr_front, $addr_back, $monthly_rent, $terms_accepted);
+                if (!mysqli_stmt_execute($stmt)) {
+                    error_log("Society KYC insert failed: " . mysqli_stmt_error($stmt));
+                    $error_msg = "Your resident details could not be saved. Please try again.";
+                }
                 mysqli_stmt_close($stmt);
+            } else {
+                error_log("Society KYC insert prepare failed: " . mysqli_error($con));
+                $error_msg = "Your resident details could not be saved. Please try again.";
             }
         }
 
-        // Sync address to member table
-        if (!empty($permanent_address)) {
+        // Sync address to member table only after the KYC record was saved.
+        if ($error_msg === "" && !empty($permanent_address)) {
             $up_m = mysqli_prepare($con, "UPDATE member SET address = ? WHERE id = ?");
             if ($up_m) {
                 mysqli_stmt_bind_param($up_m, "si", $permanent_address, $member_id);
@@ -88,7 +107,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_society_kyc'])) 
             }
         }
 
-        $success_msg = "Society Resident KYC submitted successfully! It is now under review by Admin Yuvraj.";
+        if ($error_msg === "") {
+            $success_msg = "Society Resident KYC submitted successfully and is now under review.";
+        }
 
         // Refresh
         $kyc_q = mysqli_query($con, "SELECT * FROM society_kyc WHERE member_id = $member_id ORDER BY id DESC LIMIT 1");
@@ -99,6 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_society_kyc'])) 
 $val_full_name = $kyc['full_name'] ?? ($member_row['username'] ?? '');
 $val_flat_no = $kyc['flat_no'] ?? '';
 $val_res_type = $kyc['resident_type'] ?? 'Owner';
+$val_monthly_rent = $kyc['monthly_rent'] ?? '';
 $val_father_spouse = $kyc['father_or_spouse'] ?? '';
 $val_emerg_phone = $kyc['emergency_phone'] ?? ($member_row['phone'] ?? '');
 $val_address = $kyc['permanent_address'] ?? ($member_row['address'] ?? '');
@@ -114,7 +136,7 @@ $val_status = $kyc['status'] ?? 'Not Submitted';
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Resident KYC Verification | Nilayam Heights HMS</title>
+    <title>Resident KYC Verification | Yadav Living</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -177,7 +199,7 @@ $val_status = $kyc['status'] ?? 'Not Submitted';
         <div style="background: #e0f2fe; border: 1.5px solid #38bdf8; color: #0369a1; padding: 14px 20px; border-radius: 8px; font-size: 13.5px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
             <i class='bx bx-party' style="font-size: 24px; color: #0284c7;"></i>
             <div>
-                <strong>Welcome to Nilayam Heights Society!</strong> Your member account is registered. Please complete your Official Resident KYC below to register your flat ownership/residency and ID records.
+                <strong>Welcome to Yadav Living!</strong> Your member account is registered. Please complete your official resident KYC below to register your flat ownership/residency and ID records.
             </div>
         </div>
     <?php endif; ?>
@@ -198,7 +220,7 @@ $val_status = $kyc['status'] ?? 'Not Submitted';
 
     <div class="kyc-card">
         <div class="kyc-header">
-            <h2>Nilayam Heights Resident KYC Verification</h2>
+            <h2>Yadav Living Resident KYC Verification</h2>
             <p>Government ID and flat residency documentation for secure society governance</p>
         </div>
 
@@ -216,11 +238,15 @@ $val_status = $kyc['status'] ?? 'Not Submitted';
                 </div>
                 <div class="form-group">
                     <label>Resident Type <span class="req">*</span></label>
-                    <select name="resident_type" class="form-control-kyc" required>
+                    <select name="resident_type" id="residentType" class="form-control-kyc" required>
                         <option value="Owner" <?php echo ($val_res_type === 'Owner') ? 'selected' : ''; ?>>Property Owner</option>
                         <option value="Tenant" <?php echo ($val_res_type === 'Tenant') ? 'selected' : ''; ?>>Tenant / Lessee</option>
                         <option value="Family Member" <?php echo ($val_res_type === 'Family Member') ? 'selected' : ''; ?>>Family Member</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label for="monthlyRent">Monthly Rent (₹, for tenants)</label>
+                    <input type="number" id="monthlyRent" name="monthly_rent" class="form-control-kyc" value="<?php echo htmlspecialchars((string)$val_monthly_rent); ?>" min="0" step="0.01" placeholder="Leave blank if not applicable" <?php echo $val_res_type === 'Tenant' ? 'required' : ''; ?>>
                 </div>
             </div>
 
@@ -246,7 +272,7 @@ $val_status = $kyc['status'] ?? 'Not Submitted';
 
             <div class="form-group" style="margin-bottom: 24px;">
                 <label>Permanent Residential Address <span class="req">*</span></label>
-                <textarea name="permanent_address" class="form-control-kyc" rows="2" placeholder="e.g. Hirna Road, Satsang Nagar, Deoghar, Jharkhand 814112" required><?php echo htmlspecialchars($val_address); ?></textarea>
+                <textarea name="permanent_address" class="form-control-kyc" rows="2" placeholder="Village/Town, District, State, PIN code" required><?php echo htmlspecialchars($val_address); ?></textarea>
             </div>
 
             <!-- Uploads Grid -->
@@ -261,7 +287,7 @@ $val_status = $kyc['status'] ?? 'Not Submitted';
                     <?php if (!empty($val_pic)): ?>
                         <div class="file-pill">
                             <span><i class='bx bx-image'></i> <?php echo htmlspecialchars($val_pic); ?></span>
-                            <a href="../uploads/society_kyc/<?php echo htmlspecialchars($val_pic); ?>" target="_blank" style="color: #0284c7; text-decoration: none; font-weight: 600;">View</a>
+                            <a href="<?php echo htmlspecialchars(hms_kyc_download_url('society', $val_pic), ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener" style="color: #0284c7; text-decoration: none; font-weight: 600;">View</a>
                         </div>
                     <?php endif; ?>
                     <div class="select-file-box" onclick="document.getElementById('profilePic').click()">
@@ -277,7 +303,7 @@ $val_status = $kyc['status'] ?? 'Not Submitted';
                     <?php if (!empty($val_id_f)): ?>
                         <div class="file-pill">
                             <span><i class='bx bx-id-card'></i> <?php echo htmlspecialchars($val_id_f); ?></span>
-                            <a href="../uploads/society_kyc/<?php echo htmlspecialchars($val_id_f); ?>" target="_blank" style="color: #0284c7; text-decoration: none; font-weight: 600;">View</a>
+                            <a href="<?php echo htmlspecialchars(hms_kyc_download_url('society', $val_id_f), ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener" style="color: #0284c7; text-decoration: none; font-weight: 600;">View</a>
                         </div>
                     <?php endif; ?>
                     <div class="select-file-box" onclick="document.getElementById('idFront').click()">
@@ -293,7 +319,7 @@ $val_status = $kyc['status'] ?? 'Not Submitted';
                     <?php if (!empty($val_id_b)): ?>
                         <div class="file-pill">
                             <span><i class='bx bx-id-card'></i> <?php echo htmlspecialchars($val_id_b); ?></span>
-                            <a href="../uploads/society_kyc/<?php echo htmlspecialchars($val_id_b); ?>" target="_blank" style="color: #0284c7; text-decoration: none; font-weight: 600;">View</a>
+                            <a href="<?php echo htmlspecialchars(hms_kyc_download_url('society', $val_id_b), ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener" style="color: #0284c7; text-decoration: none; font-weight: 600;">View</a>
                         </div>
                     <?php endif; ?>
                     <div class="select-file-box" onclick="document.getElementById('idBack').click()">
@@ -311,7 +337,7 @@ $val_status = $kyc['status'] ?? 'Not Submitted';
                     <?php if (!empty($val_addr_f)): ?>
                         <div class="file-pill">
                             <span><i class='bx bx-file'></i> <?php echo htmlspecialchars($val_addr_f); ?></span>
-                            <a href="../uploads/society_kyc/<?php echo htmlspecialchars($val_addr_f); ?>" target="_blank" style="color: #0284c7; text-decoration: none; font-weight: 600;">View</a>
+                            <a href="<?php echo htmlspecialchars(hms_kyc_download_url('society', $val_addr_f), ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener" style="color: #0284c7; text-decoration: none; font-weight: 600;">View</a>
                         </div>
                     <?php endif; ?>
                     <div class="select-file-box" onclick="document.getElementById('addrFront').click()">
@@ -327,7 +353,7 @@ $val_status = $kyc['status'] ?? 'Not Submitted';
                     <?php if (!empty($val_addr_b)): ?>
                         <div class="file-pill">
                             <span><i class='bx bx-file'></i> <?php echo htmlspecialchars($val_addr_b); ?></span>
-                            <a href="../uploads/society_kyc/<?php echo htmlspecialchars($val_addr_b); ?>" target="_blank" style="color: #0284c7; text-decoration: none; font-weight: 600;">View</a>
+                            <a href="<?php echo htmlspecialchars(hms_kyc_download_url('society', $val_addr_b), ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener" style="color: #0284c7; text-decoration: none; font-weight: 600;">View</a>
                         </div>
                     <?php endif; ?>
                     <div class="select-file-box" onclick="document.getElementById('addrBack').click()">
@@ -342,7 +368,7 @@ $val_status = $kyc['status'] ?? 'Not Submitted';
             <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 20px; margin-top: 20px; flex-wrap: wrap; gap: 16px;">
                 <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: #334155; cursor: pointer;">
                     <input type="checkbox" name="terms_accepted" value="1" <?php echo ($kyc['terms_accepted'] ?? 1) == 1 ? 'checked' : ''; ?> required style="width: 17px; height: 17px; accent-color: #0284c7;">
-                    <span>I certify that all details &amp; uploaded documents are authentic and abide by Nilayam Heights Society bylaws.</span>
+                    <span>I certify that all details &amp; uploaded documents are authentic and abide by Yadav Living community guidelines.</span>
                 </label>
 
                 <button type="submit" class="btn-save-kyc">
@@ -354,6 +380,14 @@ $val_status = $kyc['status'] ?? 'Not Submitted';
 </div>
 
 <script>
+    const residentTypeInput = document.getElementById('residentType');
+    const monthlyRentInput = document.getElementById('monthlyRent');
+    const syncMonthlyRentRequirement = () => {
+        monthlyRentInput.required = residentTypeInput.value === 'Tenant';
+    };
+    residentTypeInput.addEventListener('change', syncMonthlyRentRequirement);
+    syncMonthlyRentRequirement();
+
     function previewFile(input, textId) {
         if (input.files && input.files[0]) {
             document.getElementById(textId).innerText = "Selected: " + input.files[0].name;

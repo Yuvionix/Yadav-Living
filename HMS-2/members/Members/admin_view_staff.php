@@ -12,7 +12,7 @@
     <meta charset="UTF-8">
 
     <link rel="stylesheet" href="admin_view_mem.css">
-    <link rel="shortcut icon" href="Logo3.jpg">
+    <link rel="shortcut icon" href="../../home/logo.svg">
 
     <script>
         vard = new Date();
@@ -27,7 +27,7 @@
 <body>
     <div class="sidebar">
         <div class="logo-details">
-            <i><img src="logo.svg" alt="logo" width="46" height="46" style="border-radius:10px;box-shadow:0 4px 12px rgba(99,102,241,0.25);"></i>
+            <i><img src="../../home/logo.svg" alt="logo" width="46" height="46" style="border-radius:10px;box-shadow:0 4px 12px rgba(99,102,241,0.25);"></i>
             <span class="logo_name">HMS</span>
         </div>
         <ul class="nav-links">

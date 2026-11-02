@@ -1,0 +1,138 @@
+[
+  {
+    "id": "society-location",
+    "property": "society",
+    "title": "Yadav Living Society location",
+    "content": "Yadav Living Society is at AS College Road, Satsang Nagar Near Atal Smriti Park Deoghar, Jharkhand 814112. Use the public property page for the map search link.",
+    "keywords": ["address", "location", "map", "directions", "landmark", "society"],
+    "url": "/HMS-2/home/home.php"
+  },
+  {
+    "id": "society-kyc",
+    "property": "society",
+    "title": "Resident KYC and flat details",
+    "content": "Society members can submit resident and flat details, residency type, monthly rent when applicable, and identity/address documents in Resident KYC. Administrators review submissions. Open the KYC page from the resident portal.",
+    "keywords": ["resident", "kyc", "flat", "owner", "tenant", "rent", "identity", "document", "verification", "submit"],
+    "url": "/HMS-2/members/kyc.php"
+  },
+  {
+    "id": "society-bills",
+    "property": "society",
+    "title": "Society maintenance bills",
+    "content": "Residents can open Maintenance Bill in the Society portal to review their own billing records and receipts. This assistant does not access balances, payment status, or another resident's account. Refer to the portal for current amounts and payment instructions.",
+    "keywords": ["maintenance", "bill", "billing", "invoice", "payment", "receipt", "amount", "balance", "due"],
+    "url": "/HMS-2/members/Bill/index.php"
+  },
+  {
+    "id": "society-community",
+    "property": "society",
+    "title": "Society member resources",
+    "content": "The Society member portal links to community announcements, events, home services, and neighbourhood information. Check the relevant member portal page for current details; the assistant does not have live booking or schedule data.",
+    "keywords": ["member", "portal", "resource", "booking", "facility", "schedule"],
+    "url": "/HMS-2/members/Dashboard/member.php"
+  },
+  {
+    "id": "society-announcements",
+    "property": "society",
+    "title": "Society announcements",
+    "content": "Residents can read community notices in the Announcements section of the Society member portal.",
+    "keywords": ["announcement", "announcements", "notice", "notices", "circular"],
+    "url": "/HMS-2/members/Announcement/member_annou.php"
+  },
+  {
+    "id": "society-events",
+    "property": "society",
+    "title": "Society events",
+    "content": "Residents can review community events in the Events section of the Society member portal.",
+    "keywords": ["event", "events", "festival", "calendar", "celebration"],
+    "url": "/HMS-2/members/Event_calender/member_event.php"
+  },
+  {
+    "id": "society-services",
+    "property": "society",
+    "title": "Society home services",
+    "content": "The Society member portal has a Home Services section for property service information. Check that page for current service details.",
+    "keywords": ["home", "services", "electrician", "plumber", "service", "repair"],
+    "url": "/HMS-2/members/Home_Services/home_ser.php"
+  },
+  {
+    "id": "society-neighbourhood",
+    "property": "society",
+    "title": "Society neighbourhood",
+    "content": "Neighbourhood information is available from the Society member portal's Neighbourhood section.",
+    "keywords": ["neighbourhood", "neighborhood", "nearby", "community"],
+    "url": "/HMS-2/members/Neighbourhood/member_neigh.php"
+  },
+  {
+    "id": "pg-location",
+    "property": "pg",
+    "title": "Yadav Living PG location",
+    "content": "Yadav Living PG is at Hirna Near Tv relay Center Near AS College Road Dewan baba Deoghar, Jharkhand 814112. Use the public property page for the map search link.",
+    "keywords": ["address", "location", "map", "directions", "landmark", "pg", "hirna"],
+    "url": "/HMS-2/home/home.php"
+  },
+  {
+    "id": "pg-registration",
+    "property": "pg",
+    "title": "PG registration and student KYC",
+    "content": "New students can create an account from PG registration and then complete the student KYC form. Warden approval and the portal's current instructions govern room allocation and account access.",
+    "keywords": ["register", "registration", "sign", "signup", "account", "student", "kyc", "admission", "room", "allocation"],
+    "url": "/HMS-2/pg/register.php"
+  },
+  {
+    "id": "pg-student-services",
+    "property": "pg",
+    "title": "PG student profile and room information",
+    "content": "Students can review their own profile and current room information in the PG student portal. Contact the warden for account-specific corrections.",
+    "keywords": ["profile", "room", "bed", "occupancy", "allocation"],
+    "url": "/HMS-2/pg/student/profile.php"
+  },
+  {
+    "id": "pg-fees",
+    "property": "pg",
+    "title": "PG fees and payment records",
+    "content": "Stay charges are agreed with the property owners and may depend on the student's terms. Check Payments & Receipts for your own payment history and receipts, and contact the warden or owners for current charges. This assistant does not retrieve balances or payment records.",
+    "keywords": ["fee", "fees", "rent", "charge", "price", "cost", "amount", "payment", "payments", "history", "receipt", "deposit", "balance"],
+    "url": "/HMS-2/pg/student/payments.php"
+  },
+  {
+    "id": "pg-complaints",
+    "property": "pg",
+    "title": "PG maintenance complaints",
+    "content": "Students can submit a maintenance complaint from the Complaints page in the PG student portal. The warden reviews submitted requests; the assistant cannot create or view a complaint.",
+    "keywords": ["complaint", "complaints", "maintenance", "issue", "repair", "submit", "create"],
+    "url": "/HMS-2/pg/student/complaints.php"
+  },
+  {
+    "id": "pg-vacate",
+    "property": "pg",
+    "title": "PG vacate intimation",
+    "content": "Students can submit a move-out notice from Vacate Intimation in the PG student portal. Contact the warden about account-specific timelines or settlement details.",
+    "keywords": ["vacate", "move", "out", "leave", "notice", "intimation", "deposit", "settlement"],
+    "url": "/HMS-2/pg/student/vacate.php"
+  },
+  {
+    "id": "pg-announcements",
+    "property": "pg",
+    "title": "PG announcements",
+    "content": "PG students can review property notices in the Announcements section of the student portal.",
+    "keywords": ["announcement", "announcements", "notice", "notices", "broadcast"],
+    "url": "/HMS-2/pg/student/announcements.php"
+  },
+  {
+    "id": "pg-warden-operations",
+    "property": "pg",
+    "title": "PG warden room and bed operations",
+    "content": "The PG Warden Desk includes room and bed management and student records. Students can review their own room information in their profile and should contact the warden for corrections. Do not share another student's personal or KYC information.",
+    "keywords": ["warden", "room", "bed", "assignment", "occupancy", "change", "student", "admin"],
+    "url": "/HMS-2/pg/admin/rooms.php"
+  },
+  {
+    "id": "privacy",
+    "property": "both",
+    "title": "Privacy and account safety",
+    "content": "This assistant uses curated property-guide material only; it does not query resident or student records, KYC files, balances, or account history. Do not enter passwords, government ID numbers, bank or payment details, phone numbers, or other private information. Questions and selected guide excerpts are sent to the configured AI provider to generate an answer.",
+    "keywords": ["privacy", "private", "personal", "data", "security", "password", "aadhaar", "identity", "information"],
+    "url": ""
+  }
+]

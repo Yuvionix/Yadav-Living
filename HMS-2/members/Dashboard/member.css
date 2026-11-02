@@ -359,27 +359,26 @@ nav .profile-details i{
 /* Responsive Media Query */
 @media (max-width: 1240px) {
   .sidebar{
-    width: 60px;
-  }
-  .sidebar.active{
     width: 220px;
   }
+  .sidebar.active{
+    width: 64px;
+  }
   .home-section{
-    width: calc(100% - 60px);
-    left: 60px;
-  }
-  .sidebar.active ~ .home-section{
-    /* width: calc(100% - 220px); */
-    overflow: hidden;
-    left: 220px;
-  }
-  .home-section nav{
-    width: calc(100% - 60px);
-    left: 60px;
-  }
-  .sidebar.active ~ .home-section nav{
     width: calc(100% - 220px);
     left: 220px;
+  }
+  .sidebar.active ~ .home-section{
+    width: calc(100% - 64px);
+    left: 64px;
+  }
+  .home-section nav{
+    width: calc(100% - 220px);
+    left: 220px;
+  }
+  .sidebar.active ~ .home-section nav{
+    width: calc(100% - 64px);
+    left: 64px;
   }
 }
 @media (max-width: 1150px) {

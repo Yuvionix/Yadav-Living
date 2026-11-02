@@ -1,73 +1,123 @@
+<?php
+require_once __DIR__ . '/../Includes/env_loader.php';
+require_once __DIR__ . '/../Includes/property_locations.php';
+
+$siteUrl = rtrim((string)hms_env('APP_URL', ''), '/');
+if ($siteUrl === '' && preg_match('/^[A-Za-z0-9.-]+$/', (string)hms_env('RENDER_EXTERNAL_HOSTNAME', ''))) {
+    $siteUrl = 'https://' . hms_env('RENDER_EXTERNAL_HOSTNAME');
+}
+$siteParts = parse_url($siteUrl);
+$siteUrlIsValid = filter_var($siteUrl, FILTER_VALIDATE_URL)
+    && is_array($siteParts)
+    && isset($siteParts['scheme'], $siteParts['host'])
+    && in_array(strtolower($siteParts['scheme']), array('http', 'https'), true)
+    && !array_intersect(array('user', 'pass', 'query', 'fragment'), array_keys($siteParts));
+$siteUrl = $siteUrlIsValid ? $siteUrl : '';
+$canonicalUrl = $siteUrl !== '' ? $siteUrl . '/home/home.php' : '';
+$socialImageUrl = $siteUrl !== '' ? $siteUrl . '/home/logo.svg' : '';
+$siteStructuredData = array(
+    '@context' => 'https://schema.org',
+    '@graph' => array(
+        array(
+            '@type' => 'Organization',
+            '@id' => $siteUrl !== '' ? $siteUrl . '/#organization' : '#organization',
+            'name' => 'Yadav Living',
+            'alternateName' => array('Yadav Living PG', 'Yadav.in'),
+            'description' => 'Resident community services and student accommodation in Deoghar, Jharkhand.',
+            'address' => array(
+                '@type' => 'PostalAddress',
+                'streetAddress' => HMS_SOCIETY_ADDRESS,
+                'addressLocality' => 'Deoghar',
+                'addressRegion' => 'Jharkhand',
+                'postalCode' => '814112',
+                'addressCountry' => 'IN'
+            ),
+            'department' => array(
+                '@type' => 'Place',
+                'name' => 'Yadav Living PG',
+                'address' => array(
+                    '@type' => 'PostalAddress',
+                    'streetAddress' => HMS_PG_ADDRESS,
+                    'addressLocality' => 'Deoghar',
+                    'addressRegion' => 'Jharkhand',
+                    'postalCode' => '814112',
+                    'addressCountry' => 'IN'
+                )
+            ),
+            'founder' => array(
+                array('@type' => 'Person', 'name' => 'Binod Yadav'),
+                array('@type' => 'Person', 'name' => 'Sumit Yadav')
+            )
+        ),
+        array(
+            '@type' => 'WebSite',
+            '@id' => $siteUrl !== '' ? $siteUrl . '/#website' : '#website',
+            'name' => 'Yadav Living',
+            'publisher' => array('@id' => $siteUrl !== '' ? $siteUrl . '/#organization' : '#organization')
+        )
+    )
+);
+if ($canonicalUrl !== '') {
+    $siteStructuredData['@graph'][0]['url'] = $siteUrl;
+    $siteStructuredData['@graph'][0]['logo'] = $siteUrl . '/home/logo.svg';
+    $siteStructuredData['@graph'][1]['url'] = $siteUrl . '/';
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0a0f1d">
-    <meta name="description" content="Nilayam Heights Housing Society & Yadav PG for Stay (Yadav.in) - Integrated Residential & Student Coliving Platform. Engineered by Yuvraj.">
+    <meta name="theme-color" content="#f5f4ef">
+    <meta name="description" content="Yadav Living offers welcoming community living and Yadav Living PG student accommodation in Deoghar, with simple resident services.">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="home.php">
+    <?php if ($canonicalUrl !== ''): ?>
+    <link rel="canonical" href="<?php echo htmlspecialchars($canonicalUrl, ENT_QUOTES, 'UTF-8'); ?>">
+    <?php endif; ?>
+    <link rel="sitemap" type="application/xml" href="../sitemap.php">
 
     <!-- Open Graph Metadata for Social Sharing & SEO -->
-    <meta property="og:title" content="Nilayam Heights & Yadav PG | Society & Student Living Platform">
-    <meta property="og:description" content="Integrated residential operations suite overseeing Nilayam Heights Society and Yadav PG for Stay (Yadav.in). Engineered by Yuvraj.">
+    <meta property="og:title" content="Yadav Living | Community & Student Living in Deoghar">
+    <meta property="og:description" content="One thoughtful home for community living and student stays at Yadav Living PG in Deoghar.">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="Real_Estate_Logo-removebg-preview.png">
-    <meta property="og:site_name" content="Nilayam Heights HMS & Yadav PG">
+    <?php if ($socialImageUrl !== ''): ?>
+    <meta property="og:url" content="<?php echo htmlspecialchars($canonicalUrl, ENT_QUOTES, 'UTF-8'); ?>">
+    <meta property="og:image" content="<?php echo htmlspecialchars($socialImageUrl, ENT_QUOTES, 'UTF-8'); ?>">
+    <meta property="og:image:alt" content="Yadav Living community and Yadav Living PG in Deoghar">
+    <?php endif; ?>
+    <meta property="og:site_name" content="Yadav Living">
 
     <!-- Twitter Card Metadata -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Nilayam Heights & Yadav PG Platform">
-    <meta name="twitter:description" content="Integrated residential and student coliving management platform. Engineered by Yuvraj.">
-    <meta name="twitter:image" content="Real_Estate_Logo-removebg-preview.png">
+    <meta name="twitter:title" content="Yadav Living | Community & Student Living in Deoghar">
+    <meta name="twitter:description" content="One thoughtful home for community living and student stays at Yadav Living PG in Deoghar.">
+    <?php if ($socialImageUrl !== ''): ?>
+    <meta name="twitter:image" content="<?php echo htmlspecialchars($socialImageUrl, ENT_QUOTES, 'UTF-8'); ?>">
+    <?php endif; ?>
 
-    <title>Nilayam Heights & Yadav PG | Society & Student Living Platform</title>
+    <title>Yadav Living | Community &amp; Student Living in Deoghar</title>
 
     <!-- DNS prefetch & Preconnect for maximum loading performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <!-- Non-blocking Google Fonts loading -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
     <noscript>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
     </noscript>
 
     <!-- High-Performance Local Boxicons (Instant Load, Zero CDN latency) -->
     <link rel="stylesheet" href="../css/boxicons/css/boxicons.min.css">
 
     <!-- Main Stylesheet -->
-    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="home.css?v=20261102-krishna">
     <link rel="icon" type="image/svg+xml" href="logo.svg">
     <link rel="shortcut icon" href="logo.svg">
 
     <!-- Structured Data (JSON-LD) for Search Engines -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "ApartmentComplex",
-      "name": "Nilayam Heights Society & Yadav PG for Stay",
-      "alternateName": "Yadav.in",
-      "description": "Integrated residential operations suite and student coliving platform.",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Hirna Road & AS College Road, Satsang Nagar",
-        "addressLocality": "Deoghar",
-        "addressRegion": "Jharkhand",
-        "postalCode": "814112",
-        "addressCountry": "IN"
-      },
-      "founder": {
-        "@type": "Person",
-        "name": "Binod Yadav & Sumit Yadav"
-      },
-      "creator": {
-        "@type": "Person",
-        "name": "Yuvraj"
-      }
-    }
-    </script>
+    <script type="application/ld+json"><?php echo json_encode($siteStructuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?></script>
 </head>
 
 <body>
@@ -95,9 +145,11 @@
     <!-- Auspicious Sacred Header Banner with Modern Sri Krishna Aura -->
     <aside class="sacred-top-banner" aria-label="Auspicious Invocation">
         <div class="sacred-content">
-            <img src="../images/sri_krishna_modern.jpg" alt="Bhagavan Sri Krishna" class="krishna-top-avatar" width="24" height="24">
-            <span>🙏 जय श्री कृष्णा &bull; Jai Shree Krishna &bull; Auspicious Living &amp; Protection under Divine Grace 🙏</span>
-            <img src="../images/sri_krishna_modern.jpg" alt="Bhagavan Sri Krishna" class="krishna-top-avatar" width="24" height="24">
+            <picture>
+                <source srcset="../images/sri_krishna_thumb.webp" type="image/webp">
+                <img src="../images/sri_krishna_modern.jpg" alt="Bhagavan Sri Krishna" class="krishna-top-avatar" width="24" height="24" loading="eager" decoding="async" fetchpriority="high">
+            </picture>
+            <span>जय श्री कृष्णा <span aria-hidden="true">&bull;</span> A place shaped by care, community and respect</span>
         </div>
     </aside>
 
@@ -105,22 +157,21 @@
     <header class="site-header">
         <nav class="navbar-wrapper" aria-label="Main Navigation">
             <div class="logo">
-                <a href="home.php" class="logo-link" aria-label="Nilayam Heights Home">
-                    <img src="logo.svg" alt="HMS Emblem" width="44" height="44" class="brand-logo-img">
+                <a href="home.php" class="logo-link" aria-label="Yadav Living Home">
+                    <img src="logo.svg" alt="" width="44" height="44" class="brand-logo-img">
                     <div class="brand-info">
                         <div class="brand-title-wrap">
-                            <span class="logo-badge">HMS</span>
-                            <span class="logo-text">Nilayam Heights</span>
+                            <span class="logo-text">Yadav Living</span>
                         </div>
-                        <span class="brand-sub">&bull; Yadav PG for Stay</span>
+                        <span class="brand-sub">Community <span aria-hidden="true">&bull;</span> Student living</span>
                     </div>
                 </a>
             </div>
             <ul class="nav-area">
                 <li><a href="home.php" class="active" aria-current="page"><i class='bx bx-home-alt'></i> Home</a></li>
                 <li><a href="../admin_login.php" class="nav-admin-portal-link"><i class='bx bxs-shield-quarter'></i> Admin Portal</a></li>
-                <li><a href="../login.php"><i class='bx bx-buildings'></i> Society Portal</a></li>
-                <li><a href="../pg/login.php" class="nav-pg-link"><i class='bx bxs-institution'></i> Yadav PG (Yadav.in)</a></li>
+                <li><a href="../login.php"><i class='bx bx-buildings'></i> Resident Portal</a></li>
+                <li><a href="../pg/login.php" class="nav-pg-link"><i class='bx bxs-institution'></i> Yadav Living PG</a></li>
                 <li><a href="../pg/register.php" class="btn-nav-student-signup"><i class='bx bx-user-plus'></i> Student Sign Up</a></li>
                 <li><a href="../register.php" class="btn-nav-signup">Resident Sign Up</a></li>
             </ul>
@@ -130,41 +181,46 @@
     <!-- Main Hero Content -->
     <main class="welcome-container" id="main-content">
         <div class="hero-inner">
-            <!-- Location & Feature Badges -->
+            <!-- Place and brand markers -->
             <div class="hero-badges-strip">
                 <div class="society-pill loc-pill">
-                    <i class='bx bx-map-pin' aria-hidden="true"></i> Satsang Nagar, Deoghar (814112)
+                    <i class='bx bx-map-pin' aria-hidden="true"></i> AS College Road, Deoghar
                 </div>
                 <div class="society-pill dual-pill">
-                    <i class='bx bxs-shield-check' aria-hidden="true"></i> Dual-Property Operational Cloud
+                    <i class='bx bx-heart' aria-hidden="true"></i> Owner-led, people-first living
                 </div>
                 <div class="society-pill pg-active-pill">
-                    <i class='bx bxs-institution' aria-hidden="true"></i> Yadav PG for Stay Active
-                </div>
-                <div class="society-pill krishna-pill">
-                    <img src="../images/sri_krishna_modern.jpg" alt="Sri Krishna" class="krishna-pill-avatar" width="20" height="20">
-                    <span>जय श्री कृष्णा</span>
+                    <i class='bx bxs-institution' aria-hidden="true"></i> Society &amp; student living
                 </div>
             </div>
 
             <h1 class="hero-title">
-                HMS &mdash; <span class="gradient-text">Residential Society & Student Coliving</span> Platform
+                A place to belong.<br><span class="gradient-text">A life made a little easier.</span>
             </h1>
             
             <p class="hero-subtitle">
-                Integrated residential operations suite overseeing <b>Nilayam Heights Society</b> and <b>Yadav PG for Stay (Yadav.in)</b>. Seamless management of maintenance billing, visitor gate registers, 24/7 AI resident assistant, and student bed allocations with direct owner coordination.
+                Rooted in Deoghar, Yadav Living brings together a welcoming residential community and student accommodation at Yadav Living PG. We believe the details of everyday living matter, and everyone deserves to feel at home.
             </p>
 
+            <div class="hero-actions" aria-label="Choose a place to explore">
+                <a class="hero-action-primary" href="#card-society">
+                    <i class='bx bx-building-house' aria-hidden="true"></i> Explore community living
+                </a>
+                <a class="hero-action-secondary" href="#card-pg">
+                    <i class='bx bxs-graduation' aria-hidden="true"></i> Explore student stay
+                </a>
+            </div>
+
             <!-- Interactive Property View Filter Tabs -->
-            <div class="filter-tabs-container" role="tablist" aria-label="Property Filter">
-                <button type="button" class="tab-btn active" role="tab" aria-selected="true" id="tab-all" onclick="filterProperty('all', this)">
+            <div class="filter-tabs-container" role="group" aria-label="Filter properties">
+                <button type="button" class="tab-btn active" aria-pressed="true" id="tab-all" onclick="filterProperty('all', this)">
                     <i class='bx bx-grid-alt' aria-hidden="true"></i> All Portals
                 </button>
-                <button type="button" class="tab-btn" role="tab" aria-selected="false" id="tab-society" onclick="filterProperty('society', this)">
-                    <i class='bx bx-building' aria-hidden="true"></i> Nilayam Heights Society
+                <button type="button" class="tab-btn" aria-pressed="false" id="tab-society" onclick="filterProperty('society', this)">
+                    <i class='bx bx-building' aria-hidden="true"></i> Yadav Living Community
                 </button>
-                <button type="button" class="tab-btn" role="tab" aria-selected="false" id="tab-pg" onclick="filterProperty('pg', this)">
-                    <i class='bx bxs-graduation' aria-hidden="true"></i> Yadav PG for Stay
+                <button type="button" class="tab-btn" aria-pressed="false" id="tab-pg" onclick="filterProperty('pg', this)">
+                    <i class='bx bxs-graduation' aria-hidden="true"></i> Yadav Living PG
                 </button>
             </div>
 
@@ -176,45 +232,51 @@
                         <span id="current-3d-view-label">Twin-Property 3D Digital Twin</span>
                     </div>
                     <div class="stage-controls">
-                        <button type="button" class="btn-ctrl active" id="btn-toggle-rotate" onclick="Campus3D.toggleRotation()">
+                        <button type="button" class="btn-ctrl active" id="btn-toggle-rotate" aria-label="Toggle automatic campus rotation" aria-pressed="true" onclick="Campus3D.toggleRotation()">
                             <i class='bx bx-sync bx-spin'></i> Auto-Spin: ON
                         </button>
-                        <button type="button" class="btn-ctrl" onclick="Campus3D.focusView('society')">
-                            <i class='bx bx-building'></i> Nilayam Towers
+                        <button type="button" class="btn-ctrl" aria-label="Focus 3D view on Yadav Living residences" onclick="Campus3D.focusView('society')">
+                            <i class='bx bx-building'></i> Yadav Living Society
                         </button>
-                        <button type="button" class="btn-ctrl" onclick="Campus3D.focusView('pg')">
-                            <i class='bx bxs-institution'></i> Yadav PG Block
+                        <button type="button" class="btn-ctrl" aria-label="Focus 3D view on Yadav Living PG" onclick="Campus3D.focusView('pg')">
+                            <i class='bx bxs-institution'></i> Yadav Living PG
                         </button>
-                        <button type="button" class="btn-ctrl" onclick="Campus3D.focusView('gate')">
+                        <button type="button" class="btn-ctrl" aria-label="Focus 3D view on Security Gate" onclick="Campus3D.focusView('gate')">
                             <i class='bx bx-shield-quarter'></i> Security Gate
                         </button>
-                        <button type="button" class="btn-ctrl" onclick="Campus3D.focusView('all')">
+                        <button type="button" class="btn-ctrl" aria-label="Reset 3D view" onclick="Campus3D.focusView('all')">
                             <i class='bx bx-reset'></i> Reset
                         </button>
-                        <div class="lighting-switch-group">
-                            <button type="button" class="btn-ctrl" title="Cyber Neon Lighting" onclick="Campus3D.setLightingMode('neon')">
+                        <div class="lighting-switch-group" role="group" aria-label="3D scene lighting">
+                            <button type="button" class="btn-ctrl" aria-label="Cyber Neon Lighting" title="Cyber Neon Lighting" onclick="Campus3D.setLightingMode('neon')">
                                 <i class='bx bxs-zap' style="color:#818cf8;"></i>
                             </button>
-                            <button type="button" class="btn-ctrl" title="Daylight Lighting" onclick="Campus3D.setLightingMode('daylight')">
+                            <button type="button" class="btn-ctrl" aria-label="Daylight Lighting" title="Daylight Lighting" onclick="Campus3D.setLightingMode('daylight')">
                                 <i class='bx bxs-sun' style="color:#f59e0b;"></i>
                             </button>
-                            <button type="button" class="btn-ctrl" title="Sunset Gold Lighting" onclick="Campus3D.setLightingMode('sunset')">
+                            <button type="button" class="btn-ctrl" aria-label="Sunset Gold Lighting" title="Sunset Gold Lighting" onclick="Campus3D.setLightingMode('sunset')">
                                 <i class='bx bxs-moon' style="color:#ec4899;"></i>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <div id="hero-3d-canvas-container" class="hero-3d-canvas-container" title="Interactive 3D Campus - Click and drag to rotate, move cursor for parallax">
-                    <div class="canvas-3d-hint">
-                        <i class='bx bx-pointer'></i> Click & Drag to Orbit 3D &bull; Move cursor for Parallax
+                <div id="hero-3d-canvas-container" class="hero-3d-canvas-container" role="group" tabindex="0" aria-label="Interactive 3D campus model" aria-describedby="canvas-3d-instructions">
+                    <button type="button" class="mobile-scene-load" aria-label="Load interactive 3D campus model">
+                        <i class='bx bx-cube-alt' aria-hidden="true"></i> Load interactive 3D view
+                    </button>
+                    <div class="canvas-3d-hint" id="canvas-3d-instructions">
+                        <i class='bx bx-pointer' aria-hidden="true"></i>
+                        <span class="canvas-hint-desktop">Click &amp; Drag to Orbit 3D &bull; Move cursor for Parallax</span>
+                        <span class="canvas-hint-mobile">Drag to rotate &bull; Use controls to explore</span>
+                        <span class="sr-only">When this model has keyboard focus, use the arrow keys to rotate and adjust the view. Press Home to reset the view.</span>
                     </div>
                 </div>
 
                 <!-- Hotspot Quick Info Badges -->
                 <div class="stage-footer-legend">
-                    <span class="legend-chip"><i class='bx bxs-circle' style="color:#6366f1;"></i> Nilayam Heights Towers</span>
-                    <span class="legend-chip"><i class='bx bxs-circle' style="color:#38bdf8;"></i> Yadav PG Coliving Block</span>
+                    <span class="legend-chip"><i class='bx bxs-circle' style="color:#6366f1;"></i> Yadav Living residences</span>
+                    <span class="legend-chip"><i class='bx bxs-circle' style="color:#38bdf8;"></i> Yadav Living PG</span>
                     <span class="legend-chip"><i class='bx bxs-circle' style="color:#f59e0b;"></i> 24/7 Security Gate & Wi-Fi Beacon</span>
                 </div>
             </div>
@@ -225,125 +287,112 @@
                 <div class="property-card society-card" id="card-society" role="region" aria-labelledby="heading-society">
                     <div class="card-glass-glow"></div>
                     <div class="card-header-badge">
-                        <span class="property-tag tag-society"><i class='bx bx-building' aria-hidden="true"></i> Gated Community</span>
-                        <span class="status-live"><span class="pulse-dot"></span> Live Operations</span>
+                        <span class="property-tag tag-society"><i class='bx bx-building' aria-hidden="true"></i> Community living</span>
+                        <span class="status-live">Yadav Living</span>
                     </div>
-                    <h2 class="card-title" id="heading-society">Nilayam Heights Society</h2>
-                    <p class="card-desc">Residential apartments management with automated billing, security gate registries, and community events.</p>
+                    <h2 class="card-title" id="heading-society">Yadav Living Community</h2>
+                    <p class="card-desc">A residential community in Satsang Nagar, Deoghar, with practical tools that bring everyday society services into one place.</p>
                     
                     <div class="card-features">
-                        <div class="feat-item"><i class='bx bx-receipt feat-icon text-indigo' aria-hidden="true"></i> Automated Monthly Maintenance Invoices</div>
-                        <div class="feat-item"><i class='bx bx-shield-quarter feat-icon text-indigo' aria-hidden="true"></i> Live Security Guard Gate Visitor Registry</div>
-                        <div class="feat-item"><i class='bx bx-bell feat-icon text-indigo' aria-hidden="true"></i> Official Society Announcements & Events</div>
-                        <div class="feat-item"><i class='bx bx-bot feat-icon text-indigo' aria-hidden="true"></i> 24/7 Society AI Interactive Assistant</div>
+                        <div class="feat-item"><i class='bx bx-receipt feat-icon text-indigo' aria-hidden="true"></i> Maintenance bills and payment records</div>
+                        <div class="feat-item"><i class='bx bx-shield-quarter feat-icon text-indigo' aria-hidden="true"></i> Visitor entry records for the community</div>
+                        <div class="feat-item"><i class='bx bx-bell feat-icon text-indigo' aria-hidden="true"></i> Society notices and community updates</div>
+                        <div class="feat-item"><i class='bx bx-bot feat-icon text-indigo' aria-hidden="true"></i> Resident assistance through the society portal</div>
                     </div>
+                    <p class="card-desc" style="margin-top: 16px;">
+                        <i class='bx bx-map-pin' aria-hidden="true"></i>
+                        <?php echo htmlspecialchars(HMS_SOCIETY_ADDRESS, ENT_QUOTES, 'UTF-8'); ?>
+                    </p>
 
                     <div class="card-actions">
+                        <a href="<?php echo htmlspecialchars(hms_property_map_url(HMS_SOCIETY_ADDRESS), ENT_QUOTES, 'UTF-8'); ?>" class="btn-card-secondary" target="_blank" rel="noopener noreferrer">
+                            <i class='bx bx-map' aria-hidden="true"></i> Society location
+                        </a>
                         <a href="../login.php" class="btn-card-primary">
-                            <i class='bx bx-log-in-circle' aria-hidden="true"></i> Resident & Admin Login &rarr;
+                            <i class='bx bx-log-in-circle' aria-hidden="true"></i> Enter resident portal &rarr;
                         </a>
                         <a href="../register.php" class="btn-card-secondary">
-                            <i class='bx bx-user-plus' aria-hidden="true"></i> New Resident Sign Up
+                            <i class='bx bx-user-plus' aria-hidden="true"></i> Register as a resident
                         </a>
                     </div>
                 </div>
 
-                <!-- Card 2: Yadav PG for Stay -->
+                <!-- Card 2: Yadav Living PG -->
                 <div class="property-card pg-card" id="card-pg" role="region" aria-labelledby="heading-pg">
                     <div class="card-glass-glow"></div>
                     <div class="card-header-badge">
-                        <span class="property-tag tag-pg"><i class='bx bxs-graduation' aria-hidden="true"></i> Yadav.in &bull; Boy's PG Coliving</span>
-                        <span class="status-live status-pg"><span class="pulse-dot pulse-pg"></span> Rooms Active</span>
+                        <span class="property-tag tag-pg"><i class='bx bxs-graduation' aria-hidden="true"></i> Student accommodation</span>
+                        <span class="status-live status-pg">Yadav.in</span>
                     </div>
-                    <h2 class="card-title" id="heading-pg">Yadav PG for Stay</h2>
-                    <p class="card-desc">Dedicated boy's student accommodation with single, double, & triple sharing rooms, RO water, high-speed Wi-Fi, and digital KYC. <i>(Pure accommodation &bull; No food provided)</i></p>
+                    <h2 class="card-title" id="heading-pg">Yadav Living PG</h2>
+                    <p class="card-desc">A student stay in Deoghar with room-sharing options, a straightforward registration process, and direct owner coordination. Accommodation only; meals are not provided.</p>
                     
                     <div class="card-features">
                         <div class="feat-item"><i class='bx bx-bed feat-icon text-sky' aria-hidden="true"></i> Single, Double & Triple Sharing Room Options</div>
-                        <div class="feat-item"><i class='bx bx-wifi feat-icon text-sky' aria-hidden="true"></i> High-Speed Wi-Fi, RO Water & 24/7 Power Backup</div>
-                        <div class="feat-item"><i class='bx bx-id-card feat-icon text-sky' aria-hidden="true"></i> 1-Minute Digital Student KYC & Vacate Notices</div>
-                        <div class="feat-item"><i class='bx bx-user-voice feat-icon text-sky' aria-hidden="true"></i> Direct Owner Booking & Flexible Terms (No Brokerage)</div>
+                        <div class="feat-item"><i class='bx bx-id-card feat-icon text-sky' aria-hidden="true"></i> Student registration and KYC through the portal</div>
+                        <div class="feat-item"><i class='bx bx-calendar-x feat-icon text-sky' aria-hidden="true"></i> Online vacate notice submission</div>
+                        <div class="feat-item"><i class='bx bx-user-voice feat-icon text-sky' aria-hidden="true"></i> Direct coordination with the owners</div>
                     </div>
+                    <p class="card-desc" style="margin-top: 16px;">
+                        <i class='bx bx-map-pin' aria-hidden="true"></i>
+                        <?php echo htmlspecialchars(HMS_PG_ADDRESS, ENT_QUOTES, 'UTF-8'); ?>
+                    </p>
 
                     <div class="card-actions">
+                        <a href="<?php echo htmlspecialchars(hms_property_map_url(HMS_PG_ADDRESS), ENT_QUOTES, 'UTF-8'); ?>" class="btn-card-secondary" target="_blank" rel="noopener noreferrer">
+                            <i class='bx bx-map' aria-hidden="true"></i> PG location
+                        </a>
                         <a href="../pg/register.php" class="btn-card-gold">
-                            <i class='bx bx-plus-circle' aria-hidden="true"></i> New Student Sign Up (Book Bed) &rarr;
+                            <i class='bx bx-plus-circle' aria-hidden="true"></i> Start student registration &rarr;
                         </a>
                         <a href="../pg/login.php" class="btn-card-secondary">
-                            <i class='bx bx-log-in' aria-hidden="true"></i> Student & Warden Login
+                            <i class='bx bx-log-in' aria-hidden="true"></i> Student portal sign in
                         </a>
                     </div>
                 </div>
 
-                <!-- Card 3: Divine Heritage & Auspicious Guidance -->
+                <!-- A contemporary expression of the values behind the brand -->
                 <div class="property-card divine-krishna-card" id="card-krishna" role="region" aria-labelledby="heading-divine">
                     <div class="card-glass-glow divine-glow"></div>
-                    <div class="card-header-badge">
-                        <span class="property-tag tag-divine"><i class='bx bxs-sun' aria-hidden="true"></i> Divine Aura &amp; Heritage</span>
-                        <span class="status-live status-divine"><span class="pulse-dot pulse-gold"></span> Sacred Grace</span>
+                    <div class="divine-copy">
+                        <span class="divine-eyebrow"><i class='bx bx-sun' aria-hidden="true"></i> A note of gratitude</span>
+                        <h2 class="card-title" id="heading-divine">जय श्री कृष्णा</h2>
+                        <p class="card-desc">Faith is part of our story. It reminds us to lead with kindness, humility and respect—and to welcome every resident and student with warmth.</p>
+                        <div class="divine-quote-box">
+                            <div class="sanskrit-chant">“सर्वे भवन्तु सुखिनः”</div>
+                            <div class="divine-desc">May all be well. A simple wish that reflects the spirit we hope to bring to the places we care for.</div>
+                        </div>
                     </div>
-                    <h2 class="card-title" id="heading-divine" style="color: #fef08a;">जय श्री कृष्णा &bull; Divine Living</h2>
-                    <p class="card-desc">Virtuous sanctuary and spiritual protection for all residents of Nilayam Heights and students of Yadav PG.</p>
                     
                     <div class="divine-portrait-wrap">
                         <div class="krishna-img-frame">
-                            <img src="../images/sri_krishna_modern.jpg" alt="Bhagavan Sri Krishna" class="krishna-feature-img" width="100" height="100">
+                            <picture>
+                                <source
+                                    type="image/webp"
+                                    srcset="../images/sri_krishna_thumb.webp 256w, ../images/sri_krishna_medium.webp 512w, ../images/sri_krishna_modern.webp 1024w"
+                                    sizes="(max-width: 768px) 220px, 250px">
+                                <img src="../images/sri_krishna_modern.jpg" alt="Sri Krishna playing the flute, with a peacock feather and a soft golden halo" class="krishna-feature-img" width="512" height="512" loading="lazy" decoding="async">
+                            </picture>
                         </div>
-                        <div class="divine-quote-box">
-                            <div class="sanskrit-chant">“जय श्री कृष्णा • हरे कृष्ण”</div>
-                            <div class="divine-desc">
-                                Guided by virtues of protection, truth, and auspicious living for every student and resident of <b>Nilayam Heights &amp; Yadav PG</b>.
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card-features divine-features">
-                        <div class="feat-item"><i class='bx bxs-shield-check feat-icon text-gold' aria-hidden="true"></i> Divine Protection &amp; Safe Campus Culture</div>
-                        <div class="feat-item"><i class='bx bxs-graduation feat-icon text-gold' aria-hidden="true"></i> Peaceful Study Atmosphere for Dedicated Students</div>
-                        <div class="feat-item"><i class='bx bxs-user-check feat-icon text-gold' aria-hidden="true"></i> Founded by Owners Binod Yadav &amp; Sumit Yadav</div>
-                    </div>
-
-                    <div class="card-actions">
-                        <a href="../admin_login.php" class="btn-card-gold" style="background: linear-gradient(135deg, #b45309 0%, #f59e0b 50%, #d97706 100%);">
-                            <i class='bx bxs-shield-quarter' aria-hidden="true"></i> Access Dedicated Admin Portal &rarr;
-                        </a>
+                        <span class="divine-image-caption">A reflection of the faith that inspires our home</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Modern Amenities Showcase Strip -->
-            <div class="amenities-strip" aria-label="Campus Amenities">
-                <div class="amenity-chip"><i class='bx bx-bolt-circle' aria-hidden="true"></i> 24/7 Power Backup</div>
-                <div class="amenity-chip"><i class='bx bx-water' aria-hidden="true"></i> Purified RO Water</div>
-                <div class="amenity-chip"><i class='bx bx-wifi' aria-hidden="true"></i> High-Speed Wi-Fi</div>
-                <div class="amenity-chip"><i class='bx bx-cctv' aria-hidden="true"></i> Gate Security & Registry</div>
-                <div class="amenity-chip"><i class='bx bx-clean' aria-hidden="true"></i> Daily Common Cleaning</div>
-                <div class="amenity-chip"><i class='bx bx-bot' aria-hidden="true"></i> 24/7 Society AI Assistant</div>
-                <div class="amenity-chip"><i class='bx bx-credit-card-front' aria-hidden="true"></i> Digital Invoicing</div>
-            </div>
-
-            <!-- Stats Counter Bar -->
-            <div class="metrics-bar" aria-label="Key Platform Metrics">
-                <div class="metric-item">
-                    <div class="metric-number" id="metric-flats">4+</div>
-                    <div class="metric-label">Society Flats & Towers</div>
+            <section class="brand-story" id="our-story" aria-labelledby="story-heading">
+                <div class="story-heading">
+                    <span class="story-eyebrow">Our story</span>
+                    <h2 id="story-heading">Rooted in Deoghar.<br><span>Built around people.</span></h2>
                 </div>
-                <div class="metric-divider"></div>
-                <div class="metric-item">
-                    <div class="metric-number" id="metric-rooms">8</div>
-                    <div class="metric-label">PG Rooms (Floors 1-4)</div>
+                <div class="story-body">
+                    <p>Yadav Living brings community living and Yadav Living PG together to serve different chapters of life: a residential community and a place for students to stay. We pair a personal, owner-led approach with simple digital tools for the everyday details.</p>
+                    <p>For residents, that means a clearer way to follow society services and updates. For students, it means a direct path to registration, room options and owner coordination. Behind both is the same idea: take care of the place, and the people who make it home.</p>
+                    <div class="story-signoff">
+                        <span class="story-signoff-mark" aria-hidden="true"><i class='bx bx-home-heart'></i></span>
+                        <span><strong>Binod Yadav &amp; Sumit Yadav</strong><small>Owners <span aria-hidden="true">&bull;</span> Digital experience by Yuvraj</small></span>
+                    </div>
                 </div>
-                <div class="metric-divider"></div>
-                <div class="metric-item">
-                    <div class="metric-number" id="metric-beds">18+</div>
-                    <div class="metric-label">Student Colive Beds</div>
-                </div>
-                <div class="metric-divider"></div>
-                <div class="metric-item">
-                    <div class="metric-number" id="metric-billing">100%</div>
-                    <div class="metric-label">Digital Billing & Gate Log</div>
-                </div>
-            </div>
+            </section>
         </div>
     </main>
 
@@ -353,31 +402,31 @@
             🙏 सर्वे भवन्तु सुखिनः सर्वे सन्तु निरामयाः &bull; May All Be Peaceful & Healthy 🙏
         </div>
         <div class="credits-text">
-            &copy; 2019 &ndash; <?php echo date("Y"); ?> <b>Nilayam Heights HMS</b> & <b>Yadav PG for Stay (Yadav.in)</b>. All Rights Reserved. &bull; Owned by <b>Binod Yadav & Sumit Yadav</b> &bull; Administered & Engineered by <b>Yuvraj</b>.
+            &copy; 2019 &ndash; <?php echo date("Y"); ?> <b>Yadav Living</b> &bull; Yadav Living PG. All Rights Reserved. &bull; Owned by <b>Binod Yadav & Sumit Yadav</b> &bull; Administered by <b>Yuvraj</b>.
         </div>
     </footer>
 
-    <!-- High-Performance Local Three.js & 3D Interactive Campus Engine -->
-    <script src="../js/vendor/three.min.js" defer></script>
-    <script src="../js/3d_campus_hero.js" defer></script>
-    <script src="../js/ambient_space.js" defer></script>
+    <!-- Load the 3D scene only as it approaches the viewport. -->
+    <script src="../js/campus-loader.js?v=20261102" defer></script>
 
     <script>
         function filterProperty(type, btn) {
             document.querySelectorAll('.tab-btn').forEach(b => {
                 b.classList.remove('active');
-                b.setAttribute('aria-selected', 'false');
+                b.setAttribute('aria-pressed', 'false');
             });
             btn.classList.add('active');
-            btn.setAttribute('aria-selected', 'true');
+            btn.setAttribute('aria-pressed', 'true');
 
             const cardSociety = document.getElementById('card-society');
             const cardPg = document.getElementById('card-pg');
+            const cardDivine = document.getElementById('card-krishna');
             const grid = document.getElementById('propertyGrid');
 
             if (type === 'society') {
                 cardSociety.style.display = 'flex';
                 cardPg.style.display = 'none';
+                cardDivine.style.display = 'none';
                 grid.style.gridTemplateColumns = '1fr';
                 if (window.Campus3D && typeof window.Campus3D.focusView === 'function') {
                     window.Campus3D.focusView('society');
@@ -385,6 +434,7 @@
             } else if (type === 'pg') {
                 cardSociety.style.display = 'none';
                 cardPg.style.display = 'flex';
+                cardDivine.style.display = 'none';
                 grid.style.gridTemplateColumns = '1fr';
                 if (window.Campus3D && typeof window.Campus3D.focusView === 'function') {
                     window.Campus3D.focusView('pg');
@@ -392,6 +442,7 @@
             } else {
                 cardSociety.style.display = 'flex';
                 cardPg.style.display = 'flex';
+                cardDivine.style.display = 'flex';
                 grid.style.gridTemplateColumns = window.innerWidth > 992 ? 'repeat(2, 1fr)' : '1fr';
                 if (window.Campus3D && typeof window.Campus3D.focusView === 'function') {
                     window.Campus3D.focusView('all');
@@ -399,40 +450,6 @@
             }
         }
 
-        // Animated Metric Counters
-        document.addEventListener('DOMContentLoaded', function() {
-            const metrics = [
-                { id: 'metric-flats', target: 4, suffix: '+' },
-                { id: 'metric-rooms', target: 8, suffix: '' },
-                { id: 'metric-beds', target: 18, suffix: '+' },
-                { id: 'metric-billing', target: 100, suffix: '%' }
-            ];
-
-            const bar = document.querySelector('.metrics-bar');
-            if (bar && 'IntersectionObserver' in window) {
-                let animated = false;
-                const observer = new IntersectionObserver((entries) => {
-                    if (entries[0].isIntersecting && !animated) {
-                        animated = true;
-                        metrics.forEach(m => {
-                            const el = document.getElementById(m.id);
-                            if (!el) return;
-                            let current = 0;
-                            const step = Math.ceil(m.target / 30);
-                            const timer = setInterval(() => {
-                                current += step;
-                                if (current >= m.target) {
-                                    current = m.target;
-                                    clearInterval(timer);
-                                }
-                                el.textContent = current + m.suffix;
-                            }, 35);
-                        });
-                    }
-                }, { threshold: 0.2 });
-                observer.observe(bar);
-            }
-        });
     </script>
 </body>
 </html>

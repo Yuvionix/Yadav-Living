@@ -5,14 +5,14 @@ require_once("header.php");
 // Helper function to handle file upload
 function handle_upload($file_key, $prefix, $default = null) {
     if (isset($_FILES[$file_key]) && $_FILES[$file_key]['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = __DIR__ . "/../uploads/";
+        $upload_dir = hms_kyc_upload_directory('pg');
         if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0755, true);
+            mkdir($upload_dir, 0750, true);
         }
         $ext = strtolower(pathinfo($_FILES[$file_key]['name'], PATHINFO_EXTENSION));
         $allowed = array('jpg', 'jpeg', 'png', 'pdf', 'webp');
         if (in_array($ext, $allowed)) {
-            $filename = $prefix . "_" . time() . "_" . rand(100, 999) . "." . $ext;
+            $filename = $prefix . "_" . bin2hex(random_bytes(12)) . "." . $ext;
             $target = $upload_dir . $filename;
             if (move_uploaded_file($_FILES[$file_key]['tmp_name'], $target)) {
                 return $filename;
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_kyc'])) {
     } else {
         if ($kyc) {
             // Update existing KYC
-            $stmt = mysqli_prepare($con, "UPDATE pg_kyc SET father_name = ?, father_mobile = ?, mother_name = ?, mother_mobile = ?, address = ?, profile_pic = ?, address_proof_front = ?, address_proof_back = ?, id_proof_front = ?, id_proof_back = ?, terms_accepted = ?, status = 'Verified', submitted_at = NOW() WHERE student_id = ?");
+            $stmt = mysqli_prepare($con, "UPDATE pg_kyc SET father_name = ?, father_mobile = ?, mother_name = ?, mother_mobile = ?, address = ?, profile_pic = ?, address_proof_front = ?, address_proof_back = ?, id_proof_front = ?, id_proof_back = ?, terms_accepted = ?, status = 'Pending', verified_at = NULL, submitted_at = NOW() WHERE student_id = ?");
             if ($stmt) {
                 mysqli_stmt_bind_param($stmt, "ssssssssssii", $father_name, $father_mobile, $mother_name, $mother_mobile, $address, $profile_pic, $addr_front, $addr_back, $id_front, $id_back, $terms_accepted, $current_student_id);
                 mysqli_stmt_execute($stmt);
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_kyc'])) {
             }
         } else {
             // Insert new KYC
-            $stmt = mysqli_prepare($con, "INSERT INTO pg_kyc (student_id, id_type, id_number, father_name, father_mobile, mother_name, mother_mobile, address, profile_pic, address_proof_front, address_proof_back, id_proof_front, id_proof_back, terms_accepted, status, submitted_at) VALUES (?, 'Aadhaar Card', 'AUTO-VERIFIED', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Verified', NOW())");
+            $stmt = mysqli_prepare($con, "INSERT INTO pg_kyc (student_id, id_type, id_number, father_name, father_mobile, mother_name, mother_mobile, address, profile_pic, address_proof_front, address_proof_back, id_proof_front, id_proof_back, terms_accepted, status, submitted_at) VALUES (?, 'Aadhaar Card', 'Pending Review', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', NOW())");
             if ($stmt) {
                 mysqli_stmt_bind_param($stmt, "isssssssssssi", $current_student_id, $father_name, $father_mobile, $mother_name, $mother_mobile, $address, $profile_pic, $addr_front, $addr_back, $id_front, $id_back, $terms_accepted);
                 mysqli_stmt_execute($stmt);
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_kyc'])) {
             }
         }
 
-        $success_msg = "KYC Personal Details and Identity documents saved successfully!";
+        $success_msg = "PG KYC details and identity documents saved and sent to the warden for review.";
 
         // Refresh KYC data
         $q_kyc = mysqli_query($con, "SELECT * FROM pg_kyc WHERE student_id = $current_student_id ORDER BY id DESC LIMIT 1");
@@ -345,7 +345,7 @@ $val_terms = ($kyc['terms_accepted'] ?? 1) == 1;
     <div style="background: #e0f2fe; border: 1.5px solid #38bdf8; color: #0369a1; padding: 14px 20px; border-radius: 8px; font-size: 13.5px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
         <i class='bx bx-party' style="font-size: 22px; color: #0284c7;"></i>
         <div>
-            <strong>Welcome to Yadav PG for Stay!</strong> Your account is registered. Please fill in your Guardian Details and upload ID documents below to complete official admission. Room & Bed allocation will be finalized by Owners Binod Yadav & Sumit Yadav upon room visit.
+            <strong>Welcome to Yadav Living PG!</strong> Your account is registered. Please fill in your Guardian Details and upload ID documents below to complete official admission. Room & Bed allocation will be finalized by Owners Binod Yadav & Sumit Yadav upon room visit.
         </div>
     </div>
 <?php endif; ?>
@@ -365,7 +365,36 @@ $val_terms = ($kyc['terms_accepted'] ?? 1) == 1;
 <?php endif; ?>
 
 <div class="kyc-card">
-    <div class="kyc-card-title">Personal Details</div>
+    <div class="kyc-card-title">Yadav Living PG Resident KYC</div>
+    <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:12px; padding:18px; margin-bottom:22px;">
+        <div style="font-size:14px; font-weight:700; color:#142d3e; margin-bottom:12px;">Your PG stay details</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px;">
+            <div>
+                <div style="font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase;">Room / Bed</div>
+                <div style="font-size:14px; color:#0f172a; font-weight:700; margin-top:4px;">
+                    <?php if (!empty($current_student['room_number'])): ?>
+                        <?php echo htmlspecialchars($current_student['room_number']); ?> / <?php echo htmlspecialchars($current_student['bed_label'] ?? 'Bed assigned'); ?>
+                    <?php else: ?>
+                        Awaiting allocation
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div>
+                <div style="font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase;">Agreed monthly rent</div>
+                <div style="font-size:14px; color:#0f172a; font-weight:700; margin-top:4px;">
+                    <?php echo (float)($current_student['rent_amount'] ?? 0) > 0 ? '₹' . number_format((float)$current_student['rent_amount'], 2) : 'Not set'; ?>
+                </div>
+            </div>
+            <div>
+                <div style="font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase;">Security deposit</div>
+                <div style="font-size:14px; color:#0f172a; font-weight:700; margin-top:4px;">
+                    <?php echo (float)($current_student['deposit_amount'] ?? 0) > 0 ? '₹' . number_format((float)$current_student['deposit_amount'], 2) : 'Not set'; ?>
+                </div>
+            </div>
+        </div>
+        <p style="font-size:12px; line-height:1.5; color:#475569; margin-top:12px;">These PG stay terms are maintained by the warden. Update guardian details and upload your PG identity documents below; do not enter Society flat information here.</p>
+    </div>
+    <div class="kyc-card-title">Student &amp; Guardian Identity</div>
 
     <form action="kyc.php" method="POST" enctype="multipart/form-data" id="kycForm">
         <input type="hidden" name="save_kyc" value="1">
@@ -425,7 +454,7 @@ $val_terms = ($kyc['terms_accepted'] ?? 1) == 1;
             <!-- Row 2: Permanent Address -->
             <div class="kyc-group">
                 <label>Address <span class="req">*</span></label>
-                <textarea name="address" class="kyc-textarea" placeholder="Hirna Near Tv relay Centre B. Deoghar Jharkhand 814112" rows="2" required><?php echo htmlspecialchars($val_address); ?></textarea>
+                <textarea name="address" class="kyc-textarea" placeholder="Village/Town, District, State, PIN code" rows="2" required><?php echo htmlspecialchars($val_address); ?></textarea>
             </div>
 
             <!-- Row 3: Address Proof Front -->
@@ -433,7 +462,7 @@ $val_terms = ($kyc['terms_accepted'] ?? 1) == 1;
                 <label>Address Proof Front <span class="req">*</span></label>
                 <?php if (!empty($val_addr_front)): ?>
                     <div class="file-preview-pill">
-                        <a href="../uploads/<?php echo htmlspecialchars($val_addr_front); ?>" target="_blank" class="file-pill-link">
+                        <a href="<?php echo htmlspecialchars(hms_kyc_download_url('pg', $val_addr_front), ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener" class="file-pill-link">
                             <i class='bx bx-file'></i> <?php echo htmlspecialchars($val_addr_front); ?>
                         </a>
                         <span style="font-size: 11px; color: #10b981; font-weight: 600;">Uploaded</span>
@@ -451,7 +480,7 @@ $val_terms = ($kyc['terms_accepted'] ?? 1) == 1;
                 <label>ID Proof Front <span class="req">*</span></label>
                 <?php if (!empty($val_id_front)): ?>
                     <div class="file-preview-pill">
-                        <a href="../uploads/<?php echo htmlspecialchars($val_id_front); ?>" target="_blank" class="file-pill-link">
+                        <a href="<?php echo htmlspecialchars(hms_kyc_download_url('pg', $val_id_front), ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener" class="file-pill-link">
                             <i class='bx bx-id-card'></i> <?php echo htmlspecialchars($val_id_front); ?>
                         </a>
                         <span style="font-size: 11px; color: #10b981; font-weight: 600;">Uploaded</span>
@@ -469,7 +498,7 @@ $val_terms = ($kyc['terms_accepted'] ?? 1) == 1;
                 <label>Id Proof Back <span class="req">*</span></label>
                 <?php if (!empty($val_id_back)): ?>
                     <div class="file-preview-pill">
-                        <a href="../uploads/<?php echo htmlspecialchars($val_id_back); ?>" target="_blank" class="file-pill-link">
+                        <a href="<?php echo htmlspecialchars(hms_kyc_download_url('pg', $val_id_back), ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener" class="file-pill-link">
                             <i class='bx bx-id-card'></i> <?php echo htmlspecialchars($val_id_back); ?>
                         </a>
                         <span style="font-size: 11px; color: #10b981; font-weight: 600;">Uploaded</span>
@@ -487,7 +516,7 @@ $val_terms = ($kyc['terms_accepted'] ?? 1) == 1;
                 <label>Address Proof Back <span class="req">*</span></label>
                 <?php if (!empty($val_addr_back)): ?>
                     <div class="file-preview-pill">
-                        <a href="../uploads/<?php echo htmlspecialchars($val_addr_back); ?>" target="_blank" class="file-pill-link">
+                        <a href="<?php echo htmlspecialchars(hms_kyc_download_url('pg', $val_addr_back), ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener" class="file-pill-link">
                             <i class='bx bx-file'></i> <?php echo htmlspecialchars($val_addr_back); ?>
                         </a>
                         <span style="font-size: 11px; color: #10b981; font-weight: 600;">Uploaded</span>
@@ -521,13 +550,13 @@ $val_terms = ($kyc['terms_accepted'] ?? 1) == 1;
 <div id="termsModal" style="display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 2000; align-items: center; justify-content: center;">
     <div style="background: #ffffff; width: 92%; max-width: 520px; border-radius: 12px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.25);">
         <div style="padding: 16px 20px; background: #0099e5; color: #ffffff; display: flex; justify-content: space-between; align-items: center;">
-            <strong style="font-size: 15px;"><i class='bx bx-shield-quarter'></i> Yadav PG &bull; Terms and Conditions</strong>
+            <strong style="font-size: 15px;"><i class='bx bx-shield-quarter'></i> Yadav Living PG &bull; Terms and Conditions</strong>
             <button type="button" onclick="closeTermsModal()" style="background: none; border: none; color: #fff; font-size: 22px; cursor: pointer;">&times;</button>
         </div>
         <div style="padding: 22px; font-size: 13px; line-height: 1.6; color: #334155; max-height: 380px; overflow-y: auto;">
             <p><b>1. Monthly Stay Charges:</b> Charges must be settled on or before the agreed date each month as arranged directly with Owners Binod Yadav & Sumit Yadav.</p>
             <p style="margin-top: 10px;"><b>2. Cleanliness & Discipline:</b> Rooms, balconies, and common areas must be kept clean. Quiet study hours commence at 10:00 PM.</p>
-            <p style="margin-top: 10px;"><b>3. Accommodation Facility:</b> Note that Yadav PG is a pure accommodation facility; food/meals are not provided.</p>
+            <p style="margin-top: 10px;"><b>3. Accommodation Facility:</b> Note that Yadav Living PG is a pure accommodation facility; food/meals are not provided.</p>
             <p style="margin-top: 10px;"><b>4. 30-Day Vacate Intimation:</b> Notice must be provided at least 30 days prior to vacating via the portal to settle your account.</p>
             <p style="margin-top: 10px;"><b>5. Government ID Verification:</b> Providing authentic government identification (Aadhaar/Voter/Passport) is mandatory by law.</p>
         </div>

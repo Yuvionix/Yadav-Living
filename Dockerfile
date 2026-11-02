@@ -1,5 +1,5 @@
 # Production Dockerfile for Nilayam Heights Society Management System & Yadav PG
-# Engineered by Yuvraj — Self-Contained Deployment (Built-in MariaDB + Dynamic Port)
+# Supports external databases or a built-in MariaDB with an explicitly mounted seed.
 
 FROM php:8.2-apache
 
@@ -10,10 +10,11 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libcurl4-openssl-dev \
     zip \
     unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd mysqli pdo pdo_mysql \
+    && docker-php-ext-install curl gd mysqli pdo pdo_mysql \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
@@ -22,6 +23,9 @@ WORKDIR /var/www/html
 
 # Copy project files into webroot
 COPY . /var/www/html/
+
+# Keep runtime uploads outside Apache's document root.
+RUN install -d -o www-data -g www-data -m 0750 /var/lib/nilayam-hms/uploads
 
 # Copy dynamic port and database entrypoint script
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh

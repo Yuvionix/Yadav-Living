@@ -3,8 +3,6 @@
   require_once("../../Includes/session.php"); 
   require_role('admin', '../../login.php');
 ?>
-<body>
-
 <div class="container-fluid">
 <style>
 	input[type=checkbox]
@@ -141,7 +139,6 @@
 		max-height: 150px;
 	}
 </style>
-</body>
 <script>
 	$(document).ready(function(){
 		$('table').dataTable()
@@ -217,4 +214,3 @@
 		})
 	}
 </script>
-

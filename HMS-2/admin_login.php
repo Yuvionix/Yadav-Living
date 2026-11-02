@@ -26,7 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mysqli_stmt_execute($stmt);
             $res = mysqli_stmt_get_result($stmt);
             if ($admin = mysqli_fetch_assoc($res)) {
-                if (password_verify($password, $admin['password']) || $password === 'password' || $password === $admin['password']) {
+                if (password_verify($password, $admin['password'])) {
+                    hms_clear_portal_auth_state();
+                    session_regenerate_id(true);
                     // Set Society Admin Session
                     $_SESSION['logged'] = true;
                     $_SESSION['account'] = 'admin';
@@ -48,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     } elseif ($target === 'kyc') {
                         header("Location: admin/society_kyc.php");
                     } elseif ($target === 'students') {
-                        header("Location: admin/pg_students.php");
+                        header("Location: pg/admin/students.php");
                     } else {
                         header("Location: admin/Dashboard/admin.php");
                     }
@@ -71,9 +73,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Central Administrator Portal | Nilayam Heights &amp; Yadav PG</title>
+    <meta name="description" content="Secure Yadav Living administrator sign in for community and Yadav Living PG operations, billing, KYC, and resident management.">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#090d16">
+    <title>Administrator Sign In | Yadav Living</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@600;700&display=swap">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/auth-brand.css?v=20261102">
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="icon" type="image/svg+xml" href="home/logo.svg">
+    <script defer src="js/auth-ui.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
         body {
@@ -266,14 +277,130 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-size: 12px;
             text-align: center;
         }
+        body {
+            background:
+                radial-gradient(ellipse at 12% 10%, rgba(245, 185, 66, 0.15), transparent 28%),
+                radial-gradient(ellipse at 90% 86%, rgba(2, 132, 199, 0.21), transparent 32%),
+                linear-gradient(135deg, #080f1c, #10243a 60%, #0c3447);
+        }
+        .sacred-krishna-badge {
+            padding: 8px 18px 8px 8px;
+            margin-bottom: 18px;
+            border: 0;
+            border-radius: 999px;
+            background: transparent;
+            box-shadow: none;
+            backdrop-filter: none;
+        }
+        .auth-devotional-brand { margin: 0; }
+        .admin-card {
+            border-color: rgba(235, 206, 153, 0.24);
+            border-radius: 24px;
+            padding: 30px 32px;
+            background: rgba(13, 25, 40, 0.88);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4), 0 0 34px rgba(2, 132, 199, 0.1);
+            animation: adminCardEnter 0.45s ease both;
+        }
+        @keyframes adminCardEnter {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .top-row { margin-bottom: 22px; }
+        .admin-title-wrap { margin-bottom: 22px; }
+        .admin-title-wrap h1 {
+            font-size: clamp(22px, 4vw, 27px);
+            letter-spacing: -0.035em;
+        }
+        .auth-devotional-name { font-family: 'Noto Serif Devanagari', 'Nirmala UI', serif; }
+        .admin-shield-icon {
+            border: 1px solid rgba(245, 185, 66, 0.3);
+            background: linear-gradient(145deg, #1d7f91, #145d6c);
+            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.24);
+        }
+        .form-control-admin {
+            min-height: 48px;
+            border-color: #3c4a59;
+            border-radius: 12px;
+            background: rgba(30, 41, 59, 0.68);
+        }
+        .form-control-admin:focus {
+            border-color: #64c5c6;
+            box-shadow: 0 0 0 4px rgba(94, 234, 212, 0.12);
+        }
+        .form-control-admin { padding-right: 50px; }
+        .input-wrap .password-toggle-btn {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            left: auto;
+            display: grid;
+            width: 34px;
+            height: 34px;
+            padding: 0;
+            place-items: center;
+            transform: translateY(-50%);
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            color: #a6b3c1;
+            cursor: pointer;
+        }
+        .input-wrap .password-toggle-btn:hover {
+            background: rgba(148, 163, 184, 0.14);
+            color: #f8fafc;
+        }
+        .input-wrap .password-toggle-btn:focus-visible {
+            outline: 2px solid #5eead4;
+            outline-offset: 2px;
+        }
+        .input-wrap .password-toggle-btn i {
+            position: static;
+            transform: none;
+            color: inherit;
+        }
+        .target-option {
+            min-height: 44px;
+            border-radius: 10px;
+        }
+        .target-option:has(input:checked) {
+            border-color: rgba(94, 234, 212, 0.55);
+            background: rgba(20, 93, 108, 0.28);
+            color: #f8fafc;
+        }
+        .target-option input { accent-color: #5eead4; }
+        .btn-admin-submit {
+            min-height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(110deg, #145d6c, #167f83);
+            box-shadow: 0 10px 24px rgba(2, 132, 199, 0.22);
+        }
+        .btn-admin-submit:hover {
+            background: linear-gradient(110deg, #124e5c, #126f75);
+            box-shadow: 0 12px 26px rgba(2, 132, 199, 0.3);
+        }
+        .admin-footer-credits { color: #a6b3c1; }
+        @media (max-width: 520px) {
+            body { padding: 22px 14px; }
+            .admin-card { padding: 24px 20px; border-radius: 20px; }
+            .target-selector { gap: 8px; }
+            .target-option { padding: 9px 8px; font-size: 11.5px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .admin-card { animation: none; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- Sacred Invocation with Sri Krishna Image -->
     <div class="sacred-krishna-badge">
-        <img src="images/sri_krishna_modern.jpg" alt="Bhagavan Sri Krishna" class="krishna-avatar-round">
-        <span>🙏 जय श्री कृष्णा &bull; Jai Shree Krishna &bull; Central Admin Security</span>
+        <picture>
+            <source srcset="images/sri_krishna_thumb.webp" type="image/webp">
+            <img src="images/sri_krishna_modern.jpg" alt="" width="48" height="48" loading="eager" decoding="async" fetchpriority="high">
+        </picture>
+        <span>
+            <span class="auth-devotional-name" lang="hi">जय श्री कृष्ण</span>
+            <span class="auth-devotional-rule" aria-hidden="true"></span>
+        </span>
     </div>
 
     <div class="admin-card">
@@ -288,10 +415,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="admin-title-wrap">
             <div class="admin-shield-icon">
-                <i class='bx bxs-shield-quarter'></i>
+                <i class='bx bxs-shield'></i>
             </div>
             <h1>Dedicated Administrator Portal</h1>
-            <p>Unified control for Nilayam Heights Society &amp; Yadav PG for Stay</p>
+            <p>Choose the separate Society or Yadav Living PG Warden Desk</p>
         </div>
 
         <?php if (!empty($error)): ?>
@@ -303,39 +430,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <form action="admin_login.php" method="POST">
             <div class="form-group">
-                <label>Admin Username or Email</label>
+                <label for="admin-username">Admin Username or Email</label>
                 <div class="input-wrap">
                     <i class='bx bx-user'></i>
-                    <input type="text" name="username" class="form-control-admin" placeholder="e.g. Yuvraj" required value="<?php echo htmlspecialchars($_POST['username'] ?? 'Yuvraj'); ?>" autocomplete="username">
+                    <input type="text" id="admin-username" name="username" class="form-control-admin" placeholder="Enter your admin username or email" required value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>" autocomplete="username">
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Admin Password</label>
+                <label for="admin-password">Admin Password</label>
                 <div class="input-wrap">
                     <i class='bx bx-lock-alt'></i>
-                    <input type="password" name="password" class="form-control-admin" placeholder="Enter administrator password" required autocomplete="current-password">
+                    <input type="password" id="admin-password" name="password" class="form-control-admin" placeholder="Enter administrator password" required autocomplete="current-password">
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Initial Destination Portal</label>
+                <label>Choose a Warden Desk</label>
                 <div class="target-selector">
                     <label class="target-option">
                         <input type="radio" name="target_portal" value="society" checked>
-                        <span>Society Dashboard</span>
+                        <span>Society Warden Desk</span>
                     </label>
                     <label class="target-option">
                         <input type="radio" name="target_portal" value="pg">
-                        <span>Yadav PG Warden</span>
+                        <span>Yadav Living PG Warden Desk</span>
                     </label>
                     <label class="target-option">
                         <input type="radio" name="target_portal" value="students">
-                        <span>PG Students &amp; KYC</span>
+                        <span>PG Warden Desk &middot; Student Residents</span>
                     </label>
                     <label class="target-option">
                         <input type="radio" name="target_portal" value="kyc">
-                        <span>Society Resident KYC</span>
+                        <span>Society Warden Desk &middot; Resident KYC</span>
                     </label>
                 </div>
             </div>
@@ -351,7 +478,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <div class="admin-footer-credits">
-        &copy; 2019 &ndash; <?php echo date("Y"); ?> Nilayam Heights &bull; Yadav PG for Stay &bull; Owners: Binod Yadav &amp; Sumit Yadav &bull; Engineered by Yuvraj
+        &copy; 2019 &ndash; <?php echo date("Y"); ?> Yadav Living &bull; Yadav Living PG
     </div>
 
 </body>

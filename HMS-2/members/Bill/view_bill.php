@@ -97,11 +97,30 @@ if(isset($_GET['id'])){
 					<select name="member_id" id="" class="custom-select select2">
 						<option value=""></option>
 				<?php 
-					$member = $con->query("SELECT * FROM member order by username asc");
+					if (($_SESSION['account'] ?? '') === 'admin') {
+						$member = $con->query("SELECT id, username FROM member ORDER BY username ASC");
+					} else {
+						$member_stmt = $con->prepare("SELECT id, username FROM member WHERE id = ?");
+						if (!$member_stmt) {
+							error_log("Resident billing member lookup prepare failed: " . $con->error);
+							http_response_code(500);
+							exit("Unable to load billing details.");
+						}
+						$my_uid = hms_current_member_id();
+						$member_stmt->bind_param("i", $my_uid);
+						if (!$member_stmt->execute()) {
+							error_log("Resident billing member lookup failed: " . $member_stmt->error);
+							$member_stmt->close();
+							http_response_code(500);
+							exit("Unable to load billing details.");
+						}
+						$member = $member_stmt->get_result();
+					}
 					while($row= $member->fetch_assoc()):
 				?>
 						<option value="<?php echo $row['id'] ?>" <?php echo isset($member_id) && $row['id'] == $member_id ? 'selected' : '' ?> <?php echo isset($id) && $member_id != $row['id'] ? "disabled" :'' ?>><?php echo ucwords($row['username']) ?></option>
 				<?php endwhile; ?>
+				<?php if (isset($member_stmt)) $member_stmt->close(); ?>
 					</select>
 			</div>
 			<div class="col-md-6">

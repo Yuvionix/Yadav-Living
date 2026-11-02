@@ -1,4 +1,4 @@
-/* Modern HMS Theme - Nilayam Heights by Yuvraj */
+/* Yadav Living theme */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', 'Poppins', sans-serif; }
 .sidebar { position: fixed; height: 100%; width: 240px; background: #0f172a; transition: all 0.35s ease; z-index: 1000; box-shadow: 4px 0 24px rgba(0,0,0,0.18); }

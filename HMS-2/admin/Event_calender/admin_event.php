@@ -9,21 +9,23 @@
 
 <head>
     <meta charset="UTF-8">
+    <title>Community Events | Yadav Living</title>
 
     <link rel="stylesheet" href="admin_event.css">
-    <link rel="shortcut icon" href="Logo3.jpg">
+    <link rel="shortcut icon" href="../../home/logo.svg">
 
     
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../css/master_theme.css">
+    <script defer src="../../js/dashboard-ui.js"></script>
 </head>
 
-<body>
+<body class="dashboard-page society-section-page">
     <div class="sidebar">
         <div class="logo-details">
-            <i><img src="logo.svg" alt="logo" width="46" height="46" style="border-radius:10px;box-shadow:0 4px 12px rgba(99,102,241,0.25);"></i>
-            <span class="logo_name">HMS</span>
+            <i><img src="../../home/logo.svg" alt="" width="46" height="46"></i>
+            <span class="logo_name">Yadav Living</span>
         </div>
         <ul class="nav-links">
             <li>
@@ -102,10 +104,13 @@
             </li>
         </ul>
     </div>
+    <button class="dashboard-nav-backdrop" id="societyNavBackdrop" type="button" aria-label="Close dashboard navigation"></button>
     <section class="home-section">
         <nav>
             <div class="sidebar-button">
-                <i class='bx bx-menu sidebarBtn'></i>
+                <button class="sidebarBtn" type="button" aria-label="Open dashboard navigation" aria-expanded="true">
+                    <i class='bx bx-menu' aria-hidden="true"></i>
+                </button>
                 <span class="Announcement">Events</span>
             </div>
             
@@ -221,15 +226,6 @@
     </section>
     
     <script>
-        let sidebar = document.querySelector(".sidebar");
-        let sidebarBtn = document.querySelector(".sidebarBtn");
-        sidebarBtn.onclick = function () {
-            sidebar.classList.toggle("active");
-            if (sidebar.classList.contains("active")) {
-                sidebarBtn.classList.replace("bx-menu", "bx-menu-alt-right");
-            } else
-                sidebarBtn.classList.replace("bx-menu-alt-right", "bx-menu");
-        }
     </script>
 
 </body>

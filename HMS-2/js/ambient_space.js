@@ -2,7 +2,7 @@
  * ==============================================================================
  * 🌌 AMBIENT FUTURISTIC CYBER-SPACE MATRIX
  * ==============================================================================
- * Engineered by Yuvraj for Nilayam Heights & Yadav.in
+ * Engineered by Yuvraj for Yadav Living
  * Lightweight interactive starfield & data constellation network (30 FPS, ~0.1% CPU)
  * ==============================================================================
  */

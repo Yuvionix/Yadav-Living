@@ -66,7 +66,7 @@ $vac_q = mysqli_query($con, "SELECT v.*, s.name as student_name, s.phone as stud
                             <div style="font-size:11px; color:#64748b;"><i class='bx bx-phone'></i> <?php echo htmlspecialchars($v['student_phone']); ?></div>
                         </td>
                         <td style="padding:14px 18px; font-size:13px; font-weight:600; color:#0099e5;">
-                            <?php echo htmlspecialchars($v['room_number'] ?? 'R-406'); ?> (<?php echo htmlspecialchars($v['bed_label'] ?? 'Bed B'); ?>)
+                            <?php echo !empty($v['room_number']) ? htmlspecialchars($v['room_number'] . (!empty($v['bed_label']) ? ' (' . $v['bed_label'] . ')' : ''), ENT_QUOTES, 'UTF-8') : 'Not assigned'; ?>
                         </td>
                         <td style="padding:14px 18px; font-size:13px; color:#64748b;">
                             <?php echo date("d M Y", strtotime($v['intimated_on'])); ?>

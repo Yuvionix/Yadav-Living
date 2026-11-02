@@ -1,28 +1,30 @@
 <?php 
   require_once("../../Includes/config.php"); 
   require_once("../../Includes/session.php"); 
+  require_once("../../Includes/property_locations.php");
   require_role('admin', '../../login.php');
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard | Nilayam Heights HMS</title>
-    <meta name="description" content="Nilayam Heights HMS Admin Dashboard - Manage society operations, maintenance bills, residents, staff, and visitor registry.">
+    <title>Society Dashboard | Yadav Living</title>
+    <meta name="description" content="Yadav Living dashboard for managing community operations, maintenance bills, residents, staff, and visitor records.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="admin.css">
     <link rel="stylesheet" href="../../css/master_theme.css">
-    <link rel="shortcut icon" href="Logo3.jpg">
+    <link rel="icon" type="image/svg+xml" href="../../home/logo.svg">
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    <script defer src="../../js/dashboard-ui.js"></script>
 </head>
 
-<body>
-    <div class="sidebar">
+<body class="dashboard-page dashboard-admin-page">
+    <div class="sidebar" id="societySidebar">
         <div class="logo-details">
-            <i><img src="logo.svg" alt="logo" width="46" height="46"></i>
-            <span class="logo_name">HMS</span>
+            <i><img src="../../home/logo.svg" alt="" width="46" height="46"></i>
+            <span class="logo_name">Yadav Living</span>
         </div>
         <ul class="nav-links">
             <li>
@@ -83,19 +85,13 @@
             <li>
                 <a href="../society_kyc.php">
                     <i class='bx bx-id-card' style="color: #38bdf8;"></i>
-                    <span class="links_name">Resident KYC</span>
-                </a>
-            </li>
-            <li>
-                <a href="../pg_students.php">
-                    <i class='bx bxs-graduation' style="color: #38bdf8;"></i>
-                    <span class="links_name">PG Students &amp; KYC</span>
+                    <span class="links_name">Society Warden Desk</span>
                 </a>
             </li>
             <li style="background: rgba(14, 165, 233, 0.12); border-radius: 8px; margin: 6px 0;">
                 <a href="../../pg/admin/dashboard.php">
                     <i class='bx bxs-institution' style="color: #38bdf8;"></i>
-                    <span class="links_name" style="color: #38bdf8; font-weight: 600;">Yadav PG Warden</span>
+                    <span class="links_name" style="color: #38bdf8; font-weight: 600;">Yadav Living PG Warden</span>
                 </a>
             </li>
             <li class="log_out">
@@ -110,13 +106,15 @@
     <section class="home-section">
         <nav>
             <div class="sidebar-button" style="display: flex; align-items: center; gap: 14px;">
-                <i class='bx bx-menu sidebarBtn'></i>
+                <button class="sidebarBtn" type="button" aria-label="Open dashboard navigation" aria-controls="societySidebar" aria-expanded="true">
+                    <i class='bx bx-menu' aria-hidden="true"></i>
+                </button>
                 <span class="dashboard">Society Overview</span>
-                <span style="background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; padding: 4px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; border: 1px solid #fcd34d; box-shadow: 0 2px 6px rgba(245, 158, 11, 0.15);">
-                    <i class='bx bxs-sun' style='color:#f59e0b;'></i> जय श्री कृष्णा
+                <span class="dashboard-devotional-badge">
+                    <i class='bx bxs-sun' style='color:#f59e0b;' aria-hidden="true"></i> जय श्री कृष्ण
                 </span>
-                <a href="../../pg/index.php" style="background: #e0f2fe; color: #0369a1; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Switch to Yadav PG Management">
-                    <i class='bx bx-transfer-alt'></i> Switch to Yadav PG
+                <a href="../../pg/index.php" class="dashboard-property-switch" title="Switch to Yadav Living PG Management">
+                    <i class='bx bx-transfer-alt' aria-hidden="true"></i><span>Yadav Living PG</span>
                 </a>
             </div>
             
@@ -150,18 +148,19 @@
             </div>
         </nav>
 
-        <div class="home-content" style="padding: 92px 24px 24px 24px;">
+        <div class="home-content">
             <!-- Interactive 3D Society Hero Banner -->
-            <div class="dashboard-3d-banner">
+            <div class="dashboard-3d-banner" data-animate data-delay="0">
                 <div class="banner-text">
-                    <div class="badge-location">
-                        <i class='bx bx-map-pin'></i> Satsang Nagar, Deoghar, Jharkhand
-                    </div>
-                    <h2>Nilayam Heights Society Management</h2>
-                    <p>Modern residential automation platform overseeing complex operations across <b>Hirna Road (814142)</b> and <b>AS College Road (814116)</b>. 3D digital model and 24/7 AI-powered assistance active.</p>
+                    <a class="badge-location" href="<?php echo htmlspecialchars(hms_property_map_url(HMS_SOCIETY_ADDRESS), ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
+                        <i class='bx bx-map-pin'></i> <?php echo htmlspecialchars(HMS_SOCIETY_ADDRESS, ENT_QUOTES, 'UTF-8'); ?>
+                    </a>
+                    <span class="dashboard-story-kicker">Good living begins with care</span>
+                    <h2>A community cared for, every day.</h2>
+                    <p>From a warm welcome at the gate to clear updates and dependable resident services, Yadav Living helps the everyday details of community life feel simpler.</p>
                     <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px;">
                         <a href="../Chat/ai_assistant.php" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:10px;font-size:13px;font-weight:600;">
-                            <i class='bx bx-bot'></i> Launch Society AI Agent
+                            <i class='bx bx-bot' aria-hidden="true"></i> Ask the community assistant
                         </a>
                         <a href="../Bill/index.php" class="btn" style="display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:10px;font-size:13px;font-weight:600;background:rgba(255,255,255,0.12);color:#fff;border:1px solid rgba(255,255,255,0.22);text-decoration:none;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">
                             <i class='bx bx-receipt'></i> Billing Portal
@@ -176,7 +175,7 @@
 
             <!-- Clickable Interactive Metric Cards -->
             <div class="overview-boxes">
-                <a href="../Members/index.php" class="box" style="text-decoration: none; color: inherit; cursor: pointer; transition: all 0.25s ease;">
+                <a href="../Members/index.php" class="box" data-animate data-delay="80" style="text-decoration: none; color: inherit; cursor: pointer; transition: all 0.25s ease;">
                     <div class="right-side">
                         <div class="box-topic" style="display: flex; align-items: center; justify-content: space-between;">
                             <span>Total Members</span>
@@ -191,7 +190,7 @@
                     <i class='bx bxs-user icon member'></i>
                 </a>
 
-                <a href="../Members/staff/index.php" class="box" style="text-decoration: none; color: inherit; cursor: pointer; transition: all 0.25s ease;">
+                <a href="../Members/staff/index.php" class="box" data-animate data-delay="120" style="text-decoration: none; color: inherit; cursor: pointer; transition: all 0.25s ease;">
                     <div class="right-side">
                         <div class="box-topic" style="display: flex; align-items: center; justify-content: space-between;">
                             <span>Active Staff</span>
@@ -206,7 +205,7 @@
                     <i class='bx bxs-user-circle icon staff'></i>
                 </a>
 
-                <a href="../Bill/index.php" class="box" style="text-decoration: none; color: inherit; cursor: pointer; transition: all 0.25s ease;">
+                <a href="../Bill/index.php" class="box" data-animate data-delay="180" style="text-decoration: none; color: inherit; cursor: pointer; transition: all 0.25s ease;">
                     <div class="right-side">
                         <div class="box-topic" style="display: flex; align-items: center; justify-content: space-between;">
                             <span>Society Fund</span>
@@ -221,7 +220,7 @@
                     <i class='bx bx-money icon money'></i>
                 </a>
 
-                <a href="../Bill/index.php" class="box" style="text-decoration: none; color: inherit; cursor: pointer; transition: all 0.25s ease;">
+                <a href="../Bill/index.php" class="box" data-animate data-delay="220" style="text-decoration: none; color: inherit; cursor: pointer; transition: all 0.25s ease;">
                     <div class="right-side">
                         <div class="box-topic" style="display: flex; align-items: center; justify-content: space-between;">
                             <span>Unpaid Bills</span>
@@ -326,6 +325,8 @@
         </div>
     </section>
 
+    <button class="dashboard-nav-backdrop" id="societyNavBackdrop" type="button" aria-label="Close dashboard navigation"></button>
+
     <!-- Quick Visitor Entry Modal -->
     <div id="quickVisitorModalOverlay" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 2000; align-items: center; justify-content: center;">
         <div style="background: #ffffff; width: 92%; max-width: 460px; border-radius: 18px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); overflow: hidden;">
@@ -354,22 +355,7 @@
         </div>
     </div>
 
-    <!-- Local Three.js and 3D Society Simulation (Deferred for high performance) -->
-    <script src="../../js/vendor/three.min.js" defer></script>
-    <script src="../../js/3d_society.js" defer></script>
-
     <script>
-        // Sidebar toggle
-        let sidebar = document.querySelector(".sidebar");
-        let sidebarBtn = document.querySelector(".sidebarBtn");
-        sidebarBtn.onclick = function () {
-            sidebar.classList.toggle("active");
-            if (sidebar.classList.contains("active")) {
-                sidebarBtn.classList.replace("bx-menu", "bx-menu-alt-right");
-            } else
-                sidebarBtn.classList.replace("bx-menu-alt-right", "bx-menu");
-        };
-
         // Profile details dropdown toggle
         const profileBtn = document.getElementById('profileDropdownBtn');
         const profileDropdown = document.getElementById('profileDropdown');

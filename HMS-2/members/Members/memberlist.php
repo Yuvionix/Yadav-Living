@@ -1,7 +1,7 @@
 <?php 
 require_once("../../Includes/config.php"); 
 require_once("../../Includes/session.php"); 
-require_role(array('member', 'admin'), '../../login.php');
+require_role('admin', '../../login.php');
 ?>
 
 <div class="container-fluid">

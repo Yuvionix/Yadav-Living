@@ -7,10 +7,12 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <title>Home Services Directory | Nilayam Heights HMS</title>
+    <title>Home Services | Yadav Living</title>
+    <title>Home Services Directory | Yadav Living</title>
     <link rel="stylesheet" href="home_ser.css">
     <link rel="stylesheet" href="../../css/master_theme.css">
-    <link rel="shortcut icon" href="Logo3.jpg">
+    <script defer src="../../js/dashboard-ui.js"></script>
+    <link rel="shortcut icon" href="../../home/logo.svg">
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -115,11 +117,11 @@
     </style>
 </head>
 
-<body>
+<body class="dashboard-page society-section-page">
     <div class="sidebar">
         <div class="logo-details">
-            <i><img src="logo.svg" alt="logo" width="46" height="46"></i>
-            <span class="logo_name">HMS</span>
+            <i><img src="../../home/logo.svg" alt="" width="46" height="46"></i>
+            <span class="logo_name">Yadav Living</span>
         </div>
         <ul class="nav-links">
             <li>
@@ -185,11 +187,14 @@
             </li>
         </ul>
     </div>
+    <button class="dashboard-nav-backdrop" id="societyNavBackdrop" type="button" aria-label="Close dashboard navigation"></button>
 
     <section class="home-section">
         <nav>
             <div class="sidebar-button">
-                <i class='bx bx-menu sidebarBtn'></i>
+                <button class="sidebarBtn" type="button" aria-label="Open dashboard navigation" aria-expanded="true">
+                    <i class='bx bx-menu' aria-hidden="true"></i>
+                </button>
                 <span class="neighbourhood">Verified Home Services Directory</span>
             </div>
             
@@ -204,7 +209,7 @@
         <div class="home-content" style="padding: 92px 28px 28px 28px;">
             <div style="margin-bottom: 24px;">
                 <h2 style="font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">Society Verified Staff & Essential Services</h2>
-                <p style="font-size: 14px; color: #64748b; margin: 0;">Authorized gatekeepers, electricians, plumbers, housekeepers, and packers serving Nilayam Heights, Satsang Nagar, Deoghar</p>
+                <p style="font-size: 14px; color: #64748b; margin: 0;">Authorized gatekeepers, electricians, plumbers, housekeepers, and packers serving Yadav Living, Satsang Nagar, Deoghar</p>
             </div>
 
             <!-- Category 1: Security -->
@@ -348,7 +353,7 @@
                             <div class="provider-avatar av-mover"><i class='bx bx-box'></i></div>
                             <div>
                                 <div class="provider-name">Deoghar Express Cargo</div>
-                                <div class="provider-role">Hirna Road Branch, Satsang Nagar</div>
+                                <div class="provider-role">Deoghar service provider</div>
                             </div>
                         </div>
                         <div class="rating-stars">
@@ -365,15 +370,6 @@
     </section>
 
     <script>
-        let sidebar = document.querySelector(".sidebar");
-        let sidebarBtn = document.querySelector(".sidebarBtn");
-        sidebarBtn.onclick = function () {
-            sidebar.classList.toggle("active");
-            if (sidebar.classList.contains("active")) {
-                sidebarBtn.classList.replace("bx-menu", "bx-menu-alt-right");
-            } else
-                sidebarBtn.classList.replace("bx-menu-alt-right", "bx-menu");
-        }
     </script>
 </body>
 </html>

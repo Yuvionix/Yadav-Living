@@ -15,6 +15,17 @@ Desktop.ini
 .env.local
 .env.*.local
 *.env.local
+.env*
+!.env.example
+!**/.env.example
+
+# Local resident documents and database backups
+/private_uploads/
+**/private_uploads/
+/private_backups/
+**/private_backups/
+/HMS-2/uploads/society_kyc/
+/HMS-2/pg/uploads/
 
 # Logs and runtime artifacts
 *.log
@@ -25,6 +36,7 @@ yarn-error.log*
 # Editor configurations
 .idea/
 .vscode/
+.venv/
 *.swp
 *.swo
 
@@ -34,4 +46,3 @@ yarn-error.log*
 # Temporary scratch and tests
 scratch/
 .vercel
-.env*

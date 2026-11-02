@@ -18,6 +18,30 @@ $date = $date_input . '-01';
 $month_format = date("Y-m", strtotime($date));
 $bid = isset($_POST['bid']) && !empty($_POST['bid']) ? (int)$_POST['bid'] : null;
 
+if ($bid !== null && ($_SESSION['account'] ?? '') === 'member') {
+	$my_uid = hms_current_member_id();
+	$stmt_bill_owner = $con->prepare("SELECT id FROM billing WHERE id = ? AND member_id = ?");
+	if (!$stmt_bill_owner) {
+		error_log("Billing ownership check prepare failed: " . $con->error);
+		http_response_code(500);
+		exit("Unable to verify billing access.");
+	}
+	$stmt_bill_owner->bind_param("ii", $bid, $my_uid);
+	if (!$stmt_bill_owner->execute()) {
+		error_log("Billing ownership check failed: " . $stmt_bill_owner->error);
+		$stmt_bill_owner->close();
+		http_response_code(500);
+		exit("Unable to verify billing access.");
+	}
+	$stmt_bill_owner->store_result();
+	$owns_bill = $stmt_bill_owner->num_rows > 0;
+	$stmt_bill_owner->close();
+	if (!$owns_bill) {
+		http_response_code(403);
+		exit("Unauthorized billing request.");
+	}
+}
+
 $stmt_chk = $con->prepare("SELECT id FROM billing WHERE member_id = ? AND date_format(billing_date, '%Y-%m') = ?");
 $stmt_chk->bind_param("is", $id, $month_format);
 $stmt_chk->execute();

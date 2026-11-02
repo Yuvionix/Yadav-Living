@@ -1,6 +1,6 @@
 <?php
 /**
- * Nilayam Heights HMS & Yadav PG - Lightweight Zero-Dependency Environment Loader
+ * Yadav Living - Lightweight Zero-Dependency Environment Loader
  * 
  * Safely parses .env and .env.local files without external dependencies.
  * Designed for team clarity, zero setup friction, and security.

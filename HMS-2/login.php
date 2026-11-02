@@ -25,24 +25,37 @@ if (isset($_SESSION['login_error'])) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login | Nilayam Heights HMS</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="shortcut icon" href="Logo3.jpg"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Secure Yadav Living resident sign in for community services and resident billing in Deoghar.">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#07111c">
+    <title>Resident Sign In | Yadav Living</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@600;700&display=swap">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/auth-brand.css?v=20261102">
+    <link rel="stylesheet" href="style.css?v=20261102">
+    <link rel="icon" type="image/svg+xml" href="home/logo.svg">
+    <link rel="shortcut icon" href="home/logo.svg">
+    <script defer src="js/auth-ui.js"></script>
 </head>
-<body>
+<body class="auth-page">
     <div class="container">
         <div class="row">
-            <div class="col-md-4 offset-md-4 form login-form">
-                <div class="text-center mb-3">
-                    <span style="background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; border: 1px solid #fcd34d; box-shadow: 0 2px 6px rgba(245, 158, 11, 0.2);">
-                        <img src="images/sri_krishna_modern.jpg" alt="Sri Krishna" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1.5px solid #d97706;">
-                        🙏 जय श्री कृष्णा &bull; Jai Shree Krishna
+            <div class="form login-form">
+                <div class="auth-devotional-brand" lang="hi" aria-label="जय श्री कृष्ण">
+                    <picture>
+                        <source srcset="images/sri_krishna_thumb.webp" type="image/webp">
+                        <img src="images/sri_krishna_modern.jpg" alt="" width="48" height="48" loading="eager" decoding="async" fetchpriority="high">
+                    </picture>
+                    <span>
+                        <span class="auth-devotional-name">जय श्री कृष्ण</span>
+                        <span class="auth-devotional-rule" aria-hidden="true"></span>
                     </span>
                 </div>
-                <h2 class="text-center font-weight-bold">Login Portal</h2>
-                <p class="text-center text-muted">Welcome to Nilayam Heights HMS</p>
+                <h2 class="text-center font-weight-bold">Welcome back</h2>
+                <p class="text-center text-muted">Sign in to your resident account to continue.</p>
 
                 <?php if (!empty($error_msg)): ?>
                     <div class="alert alert-danger text-center p-2 mb-3" style="font-size: 14px;">
@@ -52,23 +65,26 @@ if (isset($_SESSION['login_error'])) {
 
                 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                     <div class="form-group">
-                        <label class="small text-muted mb-1">Username or Email</label>
-                        <input type="text" name="username" placeholder="Enter username or email" class="form-control" required autocomplete="username">
+                        <label class="small text-muted mb-1" for="resident-username">Username or Email</label>
+                        <input type="text" id="resident-username" name="username" placeholder="Enter username or email" class="form-control" required autocomplete="username">
                     </div>    
                     <div class="form-group">
-                        <label class="small text-muted mb-1">Password</label>
-                        <input type="password" name="password" placeholder="Enter password" class="form-control" required autocomplete="current-password">
+                        <label class="small text-muted mb-1" for="resident-password">Password</label>
+                        <div class="auth-password-wrap">
+                            <input type="password" id="resident-password" name="password" placeholder="Enter password" class="form-control" required autocomplete="current-password">
+                        </div>
                     </div>
                     <div class="form-group">
-                       <input class="form-control button btn-primary font-weight-bold" type="submit" name="login" value="Log In">
+                       <input class="form-control button btn-primary font-weight-bold" type="submit" name="login" value="Sign in">
                     </div>
                     <hr>
-                    <div style="background: #e0f2fe; border: 1px solid #bae6fd; border-radius: 8px; padding: 10px; text-align: center; margin-bottom: 14px;">
-                        <span style="font-size: 12px; color: #0369a1; font-weight: 600;">Student in Boy's PG (Yadav PG for Stay)?</span><br>
-                        <a href="pg/login.php" style="font-size: 12px; font-weight: 700; color: #0284c7; text-decoration: underline;">
-                            Access Yadav PG Portal &rarr;
-                        </a> &bull; 
-                        <a href="pg/register.php" style="font-size: 12px; font-weight: 700; color: #16a34a; text-decoration: underline;">
+                    <div class="auth-portal-switch">
+                        <span class="auth-portal-question">Staying at Yadav Living PG?</span><br>
+                        <a href="pg/login.php">
+                            Access Yadav Living PG Portal &rarr;
+                        </a>
+                        <span class="auth-switch-divider" aria-hidden="true">&bull;</span>
+                        <a href="pg/register.php">
                             New Student Sign Up &rarr;
                         </a>
                     </div>
@@ -76,9 +92,9 @@ if (isset($_SESSION['login_error'])) {
                         <span class="text-muted small">Resident without an account? </span>
                         <a href="register.php" class="small font-weight-bold">Register as Member</a>
                     </div>
-                    <div style="background: #0f172a; border-radius: 8px; padding: 10px; text-align: center; margin-top: 14px; margin-bottom: 12px;">
-                        <a href="admin_login.php" style="color: #38bdf8; font-weight: 700; font-size: 12.5px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
-                            🛡️ Society Administrator? Dedicated Admin Login &rarr;
+                    <div class="auth-admin-switch">
+                        <a href="admin_login.php">
+                            <i class='bx bxs-shield' aria-hidden="true"></i> Society Administrator? Dedicated Admin Login &rarr;
                         </a>
                     </div>
                     <div class="link login-link text-center">
