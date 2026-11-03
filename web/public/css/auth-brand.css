@@ -1,0 +1,62 @@
+.auth-devotional-brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	margin: 0 auto 22px;
+	padding: 8px 18px 8px 8px;
+	border: 1px solid rgba(184, 145, 78, 0.3);
+	border-radius: 999px;
+	background: linear-gradient(135deg, rgba(255, 253, 247, 0.94), rgba(247, 240, 222, 0.92));
+	box-shadow: 0 10px 24px rgba(48, 41, 28, 0.12);
+	color: #614d2c;
+}
+
+.auth-devotional-brand picture {
+	display: block;
+	width: 48px;
+	height: 48px;
+	padding: 2px;
+	overflow: hidden;
+	border: 1px solid rgba(177, 139, 75, 0.75);
+	border-radius: 50%;
+	background: #fffdf6;
+	box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.72), 0 4px 12px rgba(96, 73, 35, 0.17);
+}
+
+.auth-devotional-brand img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+	object-fit: cover;
+	object-position: 54% 37%;
+}
+
+.auth-devotional-name {
+	display: block;
+	font-family: 'Noto Serif Devanagari', 'Nirmala UI', serif;
+	font-size: 19px;
+	font-weight: 700;
+	letter-spacing: 0.01em;
+	line-height: 1.4;
+	white-space: nowrap;
+}
+
+.auth-devotional-rule {
+	display: block;
+	width: 42px;
+	height: 1px;
+	margin-top: 4px;
+	background: linear-gradient(90deg, #c59c54, rgba(197, 156, 84, 0));
+}
+
+@media (max-width: 420px) {
+	.auth-devotional-brand {
+		margin-bottom: 18px;
+		padding-right: 15px;
+	}
+
+	.auth-devotional-name {
+		font-size: 17px;
+	}
+}

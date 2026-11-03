@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /portal/
+Disallow: /api/
+Sitemap: https://yadavliving.netlify.app/sitemap.xml

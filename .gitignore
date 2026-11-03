@@ -46,3 +46,11 @@ yarn-error.log*
 # Temporary scratch and tests
 scratch/
 .vercel
+
+# Netlify application dependencies and generated assets
+node_modules/
+dist/
+.netlify/*
+!.netlify/results.md
+playwright-report/
+test-results/
