@@ -1,5 +1,8 @@
 # Yadav Living
 
+> **Netlify application:** The deployable frontend and serverless backend now live in `web/`, `netlify/functions/`, and `db/`. See [Netlify deployment and account setup](NETLIFY_DEPLOYMENT.md) for the first administrator, account transition, supported workflows, and validation limits. The PHP/Docker instructions below describe the legacy implementation. Existing MySQL records and passwords have not been imported into the new application.
+
+
 **Yadav Living** is the community living brand, with **Yadav Living PG** providing student accommodation. Residents, students, staff, and administrators use a consistent Yadav Living experience.
 
 > **Project type:** Freelance client project

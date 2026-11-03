@@ -1,0 +1,56 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+[dev]
+  command = "npm run dev -- --port 5173"
+  targetPort = 5173
+  port = 8889
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+[[redirects]]
+  from = "/home/home.php"
+  to = "/"
+  status = 301
+[[redirects]]
+  from = "/HMS-2/sitemap.php"
+  to = "/sitemap.xml"
+  status = 301
+[[redirects]]
+  from = "/HMS-2/home/home.php"
+  to = "/"
+  status = 301
+[[redirects]]
+  from = "/HMS-2/"
+  to = "/"
+  status = 301
+[[redirects]]
+  from = "/HMS-2/index.php"
+  to = "/"
+  status = 301
+[[redirects]]
+  from = "/HMS-2/*"
+  to = "/portal?legacy=:splat"
+  status = 302
+[[redirects]]
+  from = "/index.php"
+  to = "/"
+  status = 301
+[[redirects]]
+  from = "/portal"
+  to = "/portal.html"
+  status = 200
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-store"
