@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title id="title">Yadav Living</title>
+  <defs>
+    <linearGradient id="brand" x1="14" y1="10" x2="112" y2="118" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#214b68"/>
+      <stop offset="1" stop-color="#286d70"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="36" y1="30" x2="94" y2="94" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f8dfa0"/>
+      <stop offset="1" stop-color="#c59a54"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="34" fill="url(#brand)"/>
+  <path d="M64 18 105 40v31c0 21-16 34-41 43C39 105 23 92 23 71V40l41-22Z" fill="none" stroke="url(#gold)" stroke-width="2.5" opacity=".8"/>
+  <path d="M37 67 64 43l27 24v24H37V67Z" fill="none" stroke="#fffdf7" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"/>
+  <path d="M57 91V73h14v18M32 63l32-28 32 28" fill="none" stroke="url(#gold)" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"/>
+  <circle cx="64" cy="61" r="3" fill="#f8dfa0"/>
+</svg>

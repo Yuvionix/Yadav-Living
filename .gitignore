@@ -46,3 +46,10 @@ yarn-error.log*
 # Temporary scratch and tests
 scratch/
 .vercel
+
+node_modules/
+dist/
+.netlify/
+
+test-results/
+playwright-report/
