@@ -1,0 +1,354 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/HMS-2/"
+  to = "/"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/index.php"
+  to = "/"
+  status = 302
+
+[[redirects]]
+  from = "/home.php"
+  to = "/"
+  status = 302
+
+[[redirects]]
+  from = "/login.php"
+  to = "/portal/?property=society"
+  status = 302
+
+[[redirects]]
+  from = "/register.php"
+  to = "/portal/?property=society&mode=signup"
+  status = 302
+
+[[redirects]]
+  from = "/admin_login.php"
+  to = "/portal/?mode=admin"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/register.php"
+  to = "/portal/?property=society&mode=signup"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/pg/register.php"
+  to = "/portal/?property=pg&mode=signup"
+  status = 302
+
+[[redirects]]
+  from = "/pg/register.php"
+  to = "/portal/?property=pg&mode=signup"
+  status = 302
+
+[[redirects]]
+  from = "/sitemap.php"
+  to = "/sitemap.xml"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/sitemap.php"
+  to = "/sitemap.xml"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/download_kyc.php"
+  to = "/portal/?property=society#kyc"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/members/kyc.php"
+  to = "/portal/?property=society#kyc"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/admin/society_kyc.php"
+  to = "/portal/?property=society#kyc"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/admin/pg_students.php"
+  to = "/portal/?property=society#people"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/staff/Dashboard/registrylist.php"
+  to = "/portal/?property=society#visitors"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/admin/Event_calender/admin_event.php"
+  to = "/portal/?property=society#events"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/admin/Announcement/connection.php"
+  to = "/portal/?property=society#announcements"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/admin/Announcement/create.php"
+  to = "/portal/?property=society#announcements"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/admin/Announcement/admin_annou.php"
+  to = "/portal/?property=society#announcements"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/admin/Bill/get_prev_details.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/admin/Bill/admin_class.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/admin/Bill/ajax.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/admin/Bill/billing.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/admin/Bill/header.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/admin/Bill/manage_payment.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/admin/Bill/print_bill.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/admin/Bill/index.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/admin/Bill/manage_billing.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/admin/Bill/view_bill.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/admin/Neighbourhood/admin_neigh.php"
+  to = "/portal/?property=society#neighbourhood"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/admin/Home_Services/home_ser.php"
+  to = "/portal/?property=society#services"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/members/Event_calender/member_event.php"
+  to = "/portal/?property=society#events"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/members/Announcement/connection.php"
+  to = "/portal/?property=society#announcements"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/members/Announcement/member_annou.php"
+  to = "/portal/?property=society#announcements"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/members/Bill/get_prev_details.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/members/Bill/admin_class.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/members/Bill/ajax.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/members/Bill/billing.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/members/Bill/header.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/members/Bill/manage_payment.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/members/Bill/print_bill.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/members/Bill/index.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/members/Bill/manage_billing.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/members/Bill/view_bill.php"
+  to = "/portal/?property=society#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/members/Neighbourhood/member_neigh.php"
+  to = "/portal/?property=society#neighbourhood"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/members/Home_Services/home_ser.php"
+  to = "/portal/?property=society#services"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/pg/admin/students.php"
+  to = "/portal/?property=pg#people"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/pg/admin/mess_mgmt.php"
+  to = "/portal/?property=pg#menu"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/pg/admin/rooms.php"
+  to = "/portal/?property=pg#rooms"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/pg/admin/vacate_mgmt.php"
+  to = "/portal/?property=pg#vacate"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/pg/admin/announcements.php"
+  to = "/portal/?property=pg#announcements"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/pg/admin/complaints_mgmt.php"
+  to = "/portal/?property=pg#complaints"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/pg/student/mess_menu.php"
+  to = "/portal/?property=pg#menu"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/pg/student/announcements.php"
+  to = "/portal/?property=pg#announcements"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/pg/student/payments.php"
+  to = "/portal/?property=pg#bills"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/pg/student/profile.php"
+  to = "/portal/?property=pg#profile"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/pg/student/kyc.php"
+  to = "/portal/?property=pg#kyc"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/pg/student/vacate.php"
+  to = "/portal/?property=pg#vacate"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/pg/student/complaints.php"
+  to = "/portal/?property=pg#complaints"
+  status = 302
+
+[[redirects]]
+  from = "/index.php"
+  to = "/"
+  status = 301
+
+[[redirects]]
+  from = "/HMS-2/home/home.php"
+  to = "/"
+  status = 301
+
+[[redirects]]
+  from = "/home/home.php"
+  to = "/"
+  status = 301
+
+[[redirects]]
+  from = "/HMS-2"
+  to = "/"
+  status = 301
+
+[[redirects]]
+  from = "/HMS-2/pg/*"
+  to = "/portal/?property=pg"
+  status = 302
+
+[[redirects]]
+  from = "/pg/*"
+  to = "/portal/?property=pg"
+  status = 302
+
+[[redirects]]
+  from = "/HMS-2/*"
+  to = "/portal/?property=society"
+  status = 302
+
+[[redirects]]
+  from = "/portal/*"
+  to = "/portal/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"
